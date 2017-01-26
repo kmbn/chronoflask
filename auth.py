@@ -42,10 +42,10 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         session['logged_in'] = True
-        user_id = get_element_id('auth', Query().email == email)
+        user_id = get_element_id('auth', Query().email == form.email.data)
         session['user_id'] = user_id
         flash('You are now logged in. User id: %s' % (user_id))
-        return redirect(url_for('home'))
+        return redirect(url_for('app.home'))
     return render_template('login.html', form=form)
 
 
@@ -53,7 +53,7 @@ def login():
 def logout():
     session['logged_in'] = None
     flash('You have been logged out.')
-    return redirect(url_for('login'))
+    return redirect(url_for('auth.login'))
 
 
 @auth.route('/register', methods=['GET', 'POST'])
@@ -73,8 +73,8 @@ def register():
                       'author_name': default_author_name, \
                       'creator_id': creator_id})
         flash('Registration successful. You can login now.')
-        return redirect(url_for('login'))
-    return render_template('register', form=form)
+        return redirect(url_for('auth.login'))
+    return render_template('register.html', form=form)
 
 '''
 def reset_password(token=None):
@@ -120,7 +120,7 @@ def change_email():
         user_id = session.get('user_id')
         get_table('auth').update({'email': new_email}, eids=user_id)
         flash('Your email address has been updated.')
-        return redirect(url_for('admin'))
+        return redirect(url_for('admin.get_details'))
     return render_template('change_email.html', form=form)
 
 
@@ -132,7 +132,7 @@ def change_password():
         get_table('auth').update({'password_hash': new_password_hash}, \
                              eids=[session.get('user_id')])
         flash('Your password has been updated.')
-        return redirect(url_for('admin'))
+        return redirect(url_for('admin.get_details'))
     return render_template('change_password', form=form)
 
 

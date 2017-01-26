@@ -17,10 +17,34 @@ def account_exists(form, field):
         raise ValidationError('Create an account first.')
 
 
-def password_correct(form, field):
-    user = get_record('auth', Query().email == field.data)
+def password_correct(form, password, email):
+    user = get_record('auth', Query().email == email)
+    print(user)
     if not pwd_context.verify(field.data, user['password_hash']):
         raise ValidationError('Invalid password. Please try again.')
+
+
+class PasswordCorrect(object):
+    """
+    Compares the values of two fields.
+    :param fieldname:
+        The name of the other field to compare to.
+    :param message:
+        Error message to raise in case of a validation error. Can be
+        interpolated with `%(other_label)s` and `%(other_name)s` to provide a
+        more helpful error.
+    """
+    def __init__(self, fieldname):
+        self.fieldname = fieldname
+
+    def __call__(self, form, field):
+        try:
+            email = form[self.fieldname]
+        except KeyError:
+            raise ValidationError(field.gettext("Invalid field name '%s'.") % self.fieldname)
+        user = get_record('auth', Query().email == email.data)
+        if not pwd_context.verify(field.data, user['password_hash']):
+            raise ValidationError('Invalid password. Please try again.')
 
 
 def authorized(form, field):
@@ -33,7 +57,7 @@ class LoginForm(Form):
     email = StringField('Email', validators=[Required(), Email(), \
                         account_exists])
     password = PasswordField('Password', validators=[Required(), \
-                             password_correct])
+                             PasswordCorrect('email')])
     submit = SubmitField('Log in')
 
 
