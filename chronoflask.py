@@ -33,7 +33,7 @@ def get_input():
     return parse_input(raw_entry, timestamp)
 
 
-def parse_input(raw_entry, timestamp):
+def parse_input(raw_entry, current_time):
     if raw_entry == 'browse all':
         return browse_all_entries()
     elif raw_entry == 'quit':
@@ -79,10 +79,10 @@ def parse_input(raw_entry, timestamp):
 # The app
 ##############################################################################
 @is_logged_in
-def process_entry(raw_entry, timestamp):
+def process_entry(raw_entry, current_time):
     tags = find_and_process_tags(raw_entry)
     clean_entry = clean_up_entry(raw_entry, tags)
-    # timestamp = create_timestamp(current_time)
+    timestamp = create_timestamp(current_time)
     return create_new_entry(clean_entry, timestamp, tags)
 
 
@@ -96,13 +96,12 @@ def clean_up_entry(raw_entry, tags):
     clean_entry = stripped_entry[0].upper() + stripped_entry[1:]
     return clean_entry
 
-'''
+
 def create_timestamp(current_time):
     #Convert datetime object to string for use with JSON.
     #May not be necessary with alterate storage or extensions.
     timestamp = datetime.strftime(current_time, '%Y-%m-%d %H:%M:%S')
     return timestamp
-'''
 
 
 def find_and_process_tags(raw_entry):
