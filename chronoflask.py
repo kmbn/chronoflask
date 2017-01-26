@@ -21,12 +21,15 @@ from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 import ujson
 from setup import *
 from db import *
-from auth_forms import LoginForm
-
+from auth import auth
+from admin import admin
 
 
 app = Flask(__name__)
 bootstrap = Bootstrap(app)
+app.register_blueprint(auth, url_prefix='/auth')
+app.register_blueprint(admin, url_prefix='/admin')
+
 
 # Load default config and override config from an environment variable
 app.config.update(dict(
@@ -145,24 +148,6 @@ def create_new_entry(clean_entry, timestamp, tags):
 def browse_all_entries():
     all_entries = get_table('entries').all()
     return render_template('home.html', all_entries=all_entries)
-
-
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if not get_record('auth', Query().email.exists()):
-        flash('You need to register first.')
-        return redirect(url_for('register'))
-    if session.get('logged_in'):
-        flash('Already logged in.')
-        return redirect(url_for('home'))
-    form = LoginForm()
-    if form.validate_on_submit():
-        session['logged_in'] = True
-        user_id = get_element_id('auth', Query().email == email)
-        session['user_id'] = user_id
-        flash('You are now logged in. User id: %s' % (user_id))
-        return redirect(url_for('home'))
-    return render_template('login.html', form=form)
 
 
 def view_single_entry(timestamp):

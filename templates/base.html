@@ -19,12 +19,12 @@
             <ul class="nav navbar-nav">
                 {% if session.logged_in %}
                     <li><a href="/">Home</a></li>
-                    <li><a href="{{ url_for('admin') }}">Admin</a></li>
-                    <li><a href="{{ url_for('logout') }}">Logout</a></li>
+                    <li><a href="{{ url_for('auth.admin') }}">Admin</a></li>
+                    <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
                 {% else %}
                     <li><a href="/">Home</a></li>
-                    <li><a href="/login">Login</a></li>
-                    <li><a href="/register">Sign up!</a></li>
+                    <li><a href="{{ url_for('auth.login') }}">Login</a></li>
+                    <li><a href="{{ url_for('auth.register') }}">Sign up!</a></li>
                 {% endif %}
             </ul>
         </div>

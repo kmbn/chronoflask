@@ -1,19 +1,23 @@
-from flask import Flask, session, redirect, url_for, render_template, flash
+from flask import Flask, session, redirect, url_for, render_template, flash, \
+                  Blueprint
 from passlib.context import CryptContext
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 import ujson
 from db import *
 from setup import *
+
+auth = Blueprint('auth', __name__)
+
 from chronoflask import *
-from auth_forms import ChangeEmailForm, ChangePasswordForm, \
-                       RegistrationForm, LoginForm
 
 
-##############################################################################
-# TinyAuth
-##############################################################################
+
+
+
 pwd_context = CryptContext(schemes=["pbkdf2_sha256"])
 
+from auth_forms import ChangeEmailForm, ChangePasswordForm, \
+                       RegistrationForm, LoginForm
 
 '''# Decorator to prevent access by non-logged users.
 def is_logged_in(func):
@@ -27,7 +31,7 @@ def is_logged_in(func):
 '''
 
 
-@app.route('/login', methods=['GET', 'POST'])
+@auth.route('/login', methods=['GET', 'POST'])
 def login():
     if not get_record('auth', Query().email.exists()):
         flash('You need to register first.')
@@ -45,14 +49,14 @@ def login():
     return render_template('login.html', form=form)
 
 
-@app.route('/logout')
+@auth.route('/logout')
 def logout():
     session['logged_in'] = None
     flash('You have been logged out.')
     return redirect(url_for('login'))
 
 
-@app.route('/register', methods=['GET', 'POST'])
+@auth.route('/register', methods=['GET', 'POST'])
 def register():
     # if not get_record('auth', Query().email.exists()):
     # need to handle the case where registration has already occured
@@ -108,7 +112,7 @@ def reset_password(token=None):
             return get_input()
 '''
 
-@app.route('/change_email', methods=['GET', 'POST'])
+@auth.route('/change_email', methods=['GET', 'POST'])
 def change_email():
     form = ChangeEmailForm()
     if form.validate_on_submit():
@@ -120,7 +124,7 @@ def change_email():
     return render_template('change_email.html', form=form)
 
 
-@app.route('/change_password', methods=['GET', 'POST'])
+@auth.route('/change_password', methods=['GET', 'POST'])
 def change_password():
     form = ChangePasswordForm()
     if form.validate_on_submit():
