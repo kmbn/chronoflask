@@ -1,8 +1,12 @@
+from flask import Flask, session, redirect, url_for, render_template, flash
 from passlib.context import CryptContext
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 import ujson
-from mocksession import Session
 from db import *
+from setup import *
+from chronoflask import *
+from auth_forms import ChangeEmailForm, ChangePasswordForm, \
+                       RegistrationForm, LoginForm
 
 
 ##############################################################################
@@ -11,66 +15,62 @@ from db import *
 pwd_context = CryptContext(schemes=["pbkdf2_sha256"])
 
 
+'''# Decorator to prevent access by non-logged users.
 def is_logged_in(func):
     def wrapper(*args):
-        if not Session.s['logged_in']:
-            print('You need to be logged in to do that.')
-            return login()
+        if not session.get('logged_in'):
+            flash('You need to be logged in to do that.')
+            return redirect(url_for('/login'))
         else:
             return func(*args)
     return wrapper
+'''
 
 
+@app.route('/login', methods=['GET', 'POST'])
 def login():
     if not get_record('auth', Query().email.exists()):
-        print('You need to register first.')
-        return False
-    if not Session.s['logged_in']:
-        email = input('Enter email: ')
-        password = input('Enter password: ')
-        user = get_record('auth', Query().email == email)
-        if not user:
-            print('That account does not exist. Please register.')
-            return False
-        if not pwd_context.verify(password, user['password_hash']):
-            print('Invalid password. Please try again.')
-            return False
-        else:
-            Session.s['logged_in'] = True
-            Session.s['user_id'] = get_element_id('auth',\
-                                                  Query().email == email)
-            print('You are now logged in. User id: %s' % \
-                  (Session.s['user_id']))
-            return True
-    else:
-        print('Already logged in.')
-        return True
+        flash('You need to register first.')
+        return redirect(url_for('register'))
+    if session.get('logged_in'):
+        flash('Already logged in.')
+        return redirect(url_for('home'))
+    form = LoginForm()
+    if form.validate_on_submit():
+        session['logged_in'] = True
+        user_id = get_element_id('auth', Query().email == email)
+        session['user_id'] = user_id
+        flash('You are now logged in. User id: %s' % (user_id))
+        return redirect(url_for('home'))
+    return render_template('login.html', form=form)
 
 
-@is_logged_in
+@app.route('/logout')
 def logout():
-    Session.s['logged_in'] = None
-    print('You have been logged out.')
-    return True
+    session['logged_in'] = None
+    flash('You have been logged out.')
+    return redirect(url_for('login'))
 
 
+@app.route('/register', methods=['GET', 'POST'])
 def register():
-    if not get_record('auth', Query().email.exists()):
-        email = input('Enter email: ')
-        password = input('Enter password: ')
-        password_hash = pwd_context.hash(password)
-        creator_id = insert_record('auth', {'email': email, \
+    # if not get_record('auth', Query().email.exists()):
+    # need to handle the case where registration has already occured
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        password_hash = pwd_context.hash(form.password.data)
+        # Create account and get creator id
+        creator_id = insert_record('auth', {'email': form.email.data, \
                                    'password_hash': password_hash})
+        # Create a chronofile
         default_chronofile_name = 'Chronofile'
         default_author_name = 'Chronologist'
         insert_record('admin', {'chronofile_name': default_chronofile_name, \
                       'author_name': default_author_name, \
                       'creator_id': creator_id})
-        print('Registration successful')
-        return True
-    else:
-        print('There is already a user registered.')
-        return True
+        flash('Registration successful. You can login now.')
+        return redirect(url_for('login'))
+    return render_template('register', form=form)
 
 '''
 def reset_password(token=None):
@@ -108,36 +108,28 @@ def reset_password(token=None):
             return get_input()
 '''
 
-@is_logged_in
+@app.route('/change_email', methods=['GET', 'POST'])
 def change_email():
-    password = input('Enter password: ')
-    user = get_table('auth').get(eid=Session.s['user_id'])
-    if not pwd_context.verify(password, user['password_hash']):
-        print('Invalid password. Please try again.')
-        return False
-    new_email = input('Enter new email: ')
-    get_table('auth').update({'email': new_email}, eids=[Session.s['user_id']])
-    print('Your email address has been updated.')
-    return True
+    form = ChangeEmailForm()
+    if form.validate_on_submit():
+        new_email = form.new_email.data
+        user_id = session.get('user_id')
+        get_table('auth').update({'email': new_email}, eids=user_id)
+        flash('Your email address has been updated.')
+        return redirect(url_for('admin'))
+    return render_template('change_email.html', form=form)
 
 
-@is_logged_in
+@app.route('/change_password', methods=['GET', 'POST'])
 def change_password():
-    current_password = input('Enter current password: ')
-    user = get_table('auth').get(eid=Session.s['user_id'])
-    if not pwd_context.verify(current_password, user['password_hash']):
-        print('Invalid password. Please try again.')
-        return False
-    new_password = input('Enter new password: ')
-    verify_password = input('Re-enter new password: ')
-    if new_password != verify_password:
-        print('Passwords do not match.')
-        return False
-    new_password_hash = pwd_context.hash(new_password)
-    get_table('auth').update({'password_hash': new_password_hash}, \
-                             eids=[Session.s['user_id']])
-    print('Your password has been updated.')
-    return True
+    form = ChangePasswordForm()
+    if form.validate_on_submit():
+        new_password_hash = pwd_context.hash(form.new_password.data)
+        get_table('auth').update({'password_hash': new_password_hash}, \
+                             eids=[session.get('user_id')])
+        flash('Your password has been updated.')
+        return redirect(url_for('admin'))
+    return render_template('change_password', form=form)
 
 
 def generate_confirmation_token(user_id, expiration=3600):

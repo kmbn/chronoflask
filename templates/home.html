@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block page_content %}
+
+    <div class="page-header">
+        <h1>Home</h1>
+    </div>
+
+    <div>
+    {% if all_entries|length == 0 %}
+        <p>Nothing in your chronofile yet.</p>
+    {% else %}
+        <ol>
+        {% for entry in all_entries %}
+            <li><p>{{ entry['timestamp'] }}: {{entry['entry']}}</br>
+            Tags: {{ entry['tags']}}</p></li>
+        {% endfor %}
+        </ol>
+    {% endif %}
+    </div>
+
+{% endblock %}

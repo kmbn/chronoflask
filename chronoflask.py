@@ -13,15 +13,30 @@ a tag, and view a list of tags.
 
 Private by default; can be made public.
 '''
+from flask import Flask, session, g, redirect, url_for, render_template, flash
+from flask_bootstrap import Bootstrap
 from datetime import datetime
 from passlib.context import CryptContext
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 import ujson
-from mocksession import Session
+from setup import *
 from db import *
-from auth import *
-from admin import *
+from auth_forms import LoginForm
 
+
+
+app = Flask(__name__)
+bootstrap = Bootstrap(app)
+
+# Load default config and override config from an environment variable
+app.config.update(dict(
+    # DATABASE=os.path.join(app.root_path, 'base.db'),
+    DEBUG=True,
+    SECRET_KEY='development key',
+    # USERNAME='admin',
+    # PASSWORD='default'
+))
+app.config.from_envvar('APP_SETTINGS', silent=True)
 
 
 ##############################################################################
@@ -32,7 +47,7 @@ def get_input():
     timestamp = datetime.utcnow()
     return parse_input(raw_entry, timestamp)
 
-
+'''
 def parse_input(raw_entry, current_time):
     if raw_entry == 'browse all':
         return browse_all_entries()
@@ -73,12 +88,11 @@ def parse_input(raw_entry, current_time):
         return get_input()
     else:
         return process_entry(raw_entry, current_time)
-
+'''
 
 ##############################################################################
 # The app
 ##############################################################################
-@is_logged_in
 def process_entry(raw_entry, current_time):
     tags = find_and_process_tags(raw_entry)
     clean_entry = clean_up_entry(raw_entry, tags)
@@ -126,19 +140,31 @@ def create_new_entry(clean_entry, timestamp, tags):
     return get_input()
 
 
-@is_logged_in
+#@is_logged_in
+@app.route('/')
 def browse_all_entries():
-    result = get_table('entries').all()
-    if not result:
-        print('Nothing in the chronofile yet.')
-    else:
-        for i in reversed(result):
-            print('%s: %s :: filed under %s' % (i['timestamp'], \
-                  i['entry'], i['tags']))
-    return get_input()
+    all_entries = get_table('entries').all()
+    return render_template('home.html', all_entries=all_entries)
 
 
-@is_logged_in
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if not get_record('auth', Query().email.exists()):
+        flash('You need to register first.')
+        return redirect(url_for('register'))
+    if session.get('logged_in'):
+        flash('Already logged in.')
+        return redirect(url_for('home'))
+    form = LoginForm()
+    if form.validate_on_submit():
+        session['logged_in'] = True
+        user_id = get_element_id('auth', Query().email == email)
+        session['user_id'] = user_id
+        flash('You are now logged in. User id: %s' % (user_id))
+        return redirect(url_for('home'))
+    return render_template('login.html', form=form)
+
+
 def view_single_entry(timestamp):
     '''
     Return a single entry based on given timestamp
@@ -153,7 +179,7 @@ def view_single_entry(timestamp):
     return get_input()
 
 
-@is_logged_in
+
 def view_entries_for_tag(tag):
     '''
     Return entries for given tag in chronological order.
@@ -170,7 +196,7 @@ def view_entries_for_tag(tag):
     return get_input()
 
 
-@is_logged_in
+
 def view_entries_for_day(day):
     '''
     Returns entries for given day in chronological order.
@@ -185,4 +211,6 @@ def view_entries_for_day(day):
     return get_input()
 
 
-get_input()
+if __name__ == '__main__':
+    #init_db()
+    app.run(debug=True)
