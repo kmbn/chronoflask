@@ -1,4 +1,3 @@
-from tinydb import TinyDB, Query, where
 from passlib.context import CryptContext
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 import ujson

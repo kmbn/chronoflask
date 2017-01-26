@@ -13,8 +13,6 @@ a tag, and view a list of tags.
 
 Private by default; can be made public.
 '''
-
-from tinydb import TinyDB, Query
 from datetime import datetime
 from passlib.context import CryptContext
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
@@ -31,11 +29,11 @@ from admin import *
 ##############################################################################
 def get_input():
     raw_entry = input('> ')
-    current_time = datetime.utcnow()
-    return parse_input(raw_entry, current_time)
+    timestamp = datetime.utcnow()
+    return parse_input(raw_entry, timestamp)
 
 
-def parse_input(raw_entry, current_time):
+def parse_input(raw_entry, timestamp):
     if raw_entry == 'browse all':
         return browse_all_entries()
     elif raw_entry == 'quit':
@@ -81,10 +79,10 @@ def parse_input(raw_entry, current_time):
 # The app
 ##############################################################################
 @is_logged_in
-def process_entry(raw_entry, current_time):
+def process_entry(raw_entry, timestamp):
     tags = find_and_process_tags(raw_entry)
     clean_entry = clean_up_entry(raw_entry, tags)
-    timestamp = create_timestamp(current_time)
+    # timestamp = create_timestamp(current_time)
     return create_new_entry(clean_entry, timestamp, tags)
 
 
@@ -98,14 +96,13 @@ def clean_up_entry(raw_entry, tags):
     clean_entry = stripped_entry[0].upper() + stripped_entry[1:]
     return clean_entry
 
-
+'''
 def create_timestamp(current_time):
-    '''
-    Convert datetime object to string for use with JSON.
-    May not be necessary with alterate storage or extensions.
-    '''
+    #Convert datetime object to string for use with JSON.
+    #May not be necessary with alterate storage or extensions.
     timestamp = datetime.strftime(current_time, '%Y-%m-%d %H:%M:%S')
     return timestamp
+'''
 
 
 def find_and_process_tags(raw_entry):
