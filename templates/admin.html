@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block page_content %}
+
+    <div class="page-header">
+        <h1>Admin</h1>
+    </div>
+
+    <div>
+        <p>Chronofile name:</p>
+        <p>{{ details['chronofile_name'] }}</p>
+    </div>
+    <div>
+        <p>Author name:</p>
+        <p>{{ details['author_name'] }}</p>
+    </div>
+
+{% endblock %}

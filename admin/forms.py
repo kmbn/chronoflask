@@ -12,4 +12,4 @@ class RenameChronofileForm(Form):
 class RenameAuthorForm(Form):
     new_name = StringField('Enter new author name', \
                            validators=[Required()])
-    submit = SubmitField('Rename chronofile')
+    submit = SubmitField('Rename author')

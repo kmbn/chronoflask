@@ -2,7 +2,7 @@ from flask_wtf import Form
 from wtforms import PasswordField, StringField, SubmitField
 from wtforms.validators import Required, Length, Email, EqualTo
 from db import *
-from auth import pwd_context
+from .views import pwd_context
 
 
 

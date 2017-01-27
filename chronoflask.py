@@ -21,9 +21,9 @@ from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 import ujson
 from setup import *
 from db import *
-from main import main
-from auth import auth
-from admin import admin
+from main.views import main
+from auth.views import auth
+from admin.views import admin
 
 
 app = Flask(__name__)

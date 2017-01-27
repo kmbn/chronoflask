@@ -19,7 +19,7 @@
             <ul class="nav navbar-nav">
                 {% if session.logged_in %}
                     <li><a href="/">Home</a></li>
-                    <li><a href="{{ url_for('auth.admin') }}">Admin</a></li>
+                    <li><a href="{{ url_for('admin.get_details') }}">Admin</a></li>
                     <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
                 {% else %}
                     <li><a href="/">Home</a></li>

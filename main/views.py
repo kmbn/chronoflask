@@ -1,5 +1,5 @@
-from flask import Flask, session, g, redirect, url_for, render_template, flash, \
-                  Blueprint
+from flask import Flask, session, g, redirect, url_for, render_template, \
+                  flash, Blueprint
 from flask_bootstrap import Bootstrap
 from datetime import datetime
 from passlib.context import CryptContext
@@ -61,7 +61,8 @@ def create_new_entry(clean_entry, timestamp, tags):
 #@is_logged_in
 @main.route('/')
 def browse_all_entries():
-    all_entries = get_table('entries').all()
+    all_entries = search_records('entries', \
+                                 Query().creator_id == session.get('user_id'))
     return render_template('home.html', all_entries=all_entries)
 
 

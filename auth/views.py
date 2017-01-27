@@ -16,7 +16,7 @@ from chronoflask import *
 
 pwd_context = CryptContext(schemes=["pbkdf2_sha256"])
 
-from auth_forms import ChangeEmailForm, ChangePasswordForm, \
+from .forms import ChangeEmailForm, ChangePasswordForm, \
                        RegistrationForm, LoginForm
 
 '''# Decorator to prevent access by non-logged users.
@@ -45,7 +45,7 @@ def login():
         user_id = get_element_id('auth', Query().email == form.email.data)
         session['user_id'] = user_id
         flash('You are now logged in. User id: %s' % (user_id))
-        return redirect(url_for('app.home'))
+        return redirect(url_for('main.browse_all_entries'))
     return render_template('login.html', form=form)
 
 

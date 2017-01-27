@@ -26,8 +26,9 @@ def search_records(table_name, query):
 
 
 def insert_record(table_name, record):
-    get_table(table_name).insert(record)
-    return True # Best way to phrase for debugging?
+    # Inserting a record returns the element id of the new record.
+    element_id = get_table(table_name).insert(record)
+    return element_id
 
 
 def update_record(table_name, field, query):
