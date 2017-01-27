@@ -7,11 +7,11 @@
 
     <div>
         <p>Chronofile name:</p>
-        <p>{{ details['chronofile_name'] }}</p>
+        <p>{{ details['chronofile_name'] }} <a href="{{ url_for('admin.rename_chronofile') }}">[edit]</a></p>
     </div>
     <div>
         <p>Author name:</p>
-        <p>{{ details['author_name'] }}</p>
+        <p>{{ details['author_name'] }} <a href="{{ url_for('admin.rename_author') }}">[edit]</a></p>
     </div>
 
 {% endblock %}

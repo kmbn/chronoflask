@@ -4,20 +4,12 @@ from passlib.context import CryptContext
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 import ujson
 from db import *
-# from setup import *
-
-auth = Blueprint('auth', __name__)
-
-from chronoflask import *
-
-
-
-
 
 pwd_context = CryptContext(schemes=["pbkdf2_sha256"])
-
 from .forms import ChangeEmailForm, ChangePasswordForm, \
                        RegistrationForm, LoginForm
+
+auth = Blueprint('auth', __name__)
 
 '''# Decorator to prevent access by non-logged users.
 def is_logged_in(func):
@@ -35,10 +27,10 @@ def is_logged_in(func):
 def login():
     if not get_record('auth', Query().email.exists()):
         flash('You need to register first.')
-        return redirect(url_for('register'))
+        return redirect(url_for('auth.register'))
     if session.get('logged_in'):
         flash('Already logged in.')
-        return redirect(url_for('home'))
+        return redirect(url_for('main.browse_all_entries'))
     form = LoginForm()
     if form.validate_on_submit():
         session['logged_in'] = True

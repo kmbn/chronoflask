@@ -8,55 +8,10 @@ import ujson
 from db import *
 from .forms import RawEntryForm
 
+
 main = Blueprint('main', __name__)
 
 
-def process_entry(raw_entry, current_time):
-    tags = find_and_process_tags(raw_entry)
-    clean_entry = clean_up_entry(raw_entry, tags)
-    timestamp = create_timestamp(current_time)
-    return create_new_entry(clean_entry, timestamp, tags)
-
-
-def clean_up_entry(raw_entry, tags):
-    # Strip hashtags from end of text
-    bag_of_words = raw_entry.split()
-    while bag_of_words[-1] in tags:
-        bag_of_words.pop()
-    stripped_entry = ' '.join(bag_of_words)
-    # Uppercase first letter
-    clean_entry = stripped_entry[0].upper() + stripped_entry[1:]
-    return clean_entry
-
-
-def create_timestamp(current_time):
-    timestamp = datetime.strftime(current_time, '%Y-%m-%d %H:%M:%S')
-    return timestamp
-
-
-def find_and_process_tags(raw_entry):
-    '''
-    Extract all hashtags from the entry.
-    '''
-    bag_of_words = raw_entry.split()
-    tags = []
-    punctuation = ['.', ',']
-    for i in bag_of_words:
-        if i[0] == '#':
-            if i[-1] in punctuation: # Clean tag if it ends w/ punctuation
-                tags.append(i[1:-1])
-            else:
-                tags.append(i[1:])
-    return tags
-
-
-def create_new_entry(clean_entry, timestamp, tags):
-    insert_record('entries', {'entry': clean_entry, 'timestamp': timestamp, \
-                    'tags': tags, 'creator_id': session.get('user_id')})
-    return redirect(url_for('main.browse_all_entries'))
-
-
-#@is_logged_in
 @main.route('/', methods=['GET', 'POST'])
 def browse_all_entries():
     form = RawEntryForm()
@@ -65,6 +20,32 @@ def browse_all_entries():
     all_entries = search_records('entries', \
                                  Query().creator_id == session.get('user_id'))
     return render_template('home.html', all_entries=all_entries, form=form)
+
+
+@main.route('day/<day>', methods=['GET', 'POST'])
+def view_entries_for_day(day):
+    '''Returns entries for given day in chronological order.'''
+    form = RawEntryForm()
+    if form.validate_on_submit():
+        return parse_input(form.raw_entry.data, datetime.utcnow())
+    entries_for_day = search_records('entries', Query().timestamp.all([day]))
+    return render_template('day.html', form=form, day=day, \
+                           entries_for_day=entries_for_day)
+
+
+@main.route('timestamp/<timestamp>', methods=['GET', 'POST'])
+def view_single_entry(timestamp):
+    '''Return a single entry based on given timestamp.'''
+    form = RawEntryForm()
+    if form.validate_on_submit():
+        return parse_input(form.raw_entry.data, datetime.utcnow())
+    entry = get_record('entries', Query().timestamp == timestamp)
+    return render_template('entry.html', form=form, timestamp=timestamp, \
+                           entry=entry)
+
+
+def view_all_tags():
+    pass
 
 
 @main.route('tags/<tag>', methods=['GET', 'POST'])
@@ -77,9 +58,6 @@ def view_entries_for_tag(tag):
     # result = get_db().search(Query().tags.all(tag))
     return render_template('tag.html', form=form, tag=tag, \
                            entries_for_tag=entries_for_tag)
-
-
-
 
 
 def parse_input(raw_entry, current_time):
@@ -119,32 +97,55 @@ def parse_input(raw_entry, current_time):
         return process_entry(raw_entry, current_time)
 
 
-def view_single_entry(timestamp):
+def process_entry(raw_entry, current_time):
+    raw_tags = find_and_process_tags(raw_entry)
+    clean_entry = clean_up_entry(raw_entry, raw_tags)
+    clean_tags = clean_up_tags(raw_tags)
+    timestamp = create_timestamp(current_time)
+    return create_new_entry(clean_entry, timestamp, clean_tags)
+
+
+def clean_up_entry(raw_entry, raw_tags):
+    # Strip hashtags from end of text
+    bag_of_words = raw_entry.split()
+    while bag_of_words[-1] in raw_tags:
+        bag_of_words.pop()
+    stripped_entry = ' '.join(bag_of_words)
+    # Uppercase first letter
+    clean_entry = stripped_entry[0].upper() + stripped_entry[1:]
+    return clean_entry
+
+
+def create_timestamp(current_time):
+    timestamp = datetime.strftime(current_time, '%Y-%m-%d %H:%M:%S')
+    return timestamp
+
+
+def find_and_process_tags(raw_entry):
     '''
-    Return a single entry based on given timestamp
+    Extract all hashtags from the entry.
     '''
-    result = get_record('entries', Query().timestamp == timestamp)
-    if not result:
-        print('No entry for that timestamp.')
-    else:
-        print('Entry for %s:' % (result['timestamp']))
-        print('%s: %s :: filed under %s' % (result['timestamp'], \
-              result['entry'], result['tags']))
-    return get_input()
+    bag_of_words = raw_entry.split()
+    raw_tags = list()
+    punctuation = ['.', ',']
+    for i in bag_of_words:
+        if i[0] == '#':
+            if i[-1] in punctuation: # Clean tag if it ends w/ punctuation
+                raw_tags.append(i[:-1])
+            else:
+                raw_tags.append(i)
+    return raw_tags
 
 
+def clean_up_tags(raw_tags):
+    print(raw_tags)
+    clean_tags = []
+    for tag in raw_tags:
+        clean_tags.append(tag[1:])
+    return clean_tags
 
 
-
-def view_entries_for_day(day):
-    '''
-    Returns entries for given day in chronological order.
-    '''
-    result = search_records('entries', Query().timestamp.all([day]))
-    if not result:
-        print('No entries for that day.')
-    else:
-        for i in result:
-            print('%s: %s :: filed under %s' % (i['timestamp'], \
-                  i['entry'], i['tags']))
-    return get_input()
+def create_new_entry(clean_entry, timestamp, clean_tags):
+    insert_record('entries', {'entry': clean_entry, 'timestamp': timestamp, \
+                    'tags': clean_tags, 'creator_id': session.get('user_id')})
+    return redirect(url_for('main.browse_all_entries'))

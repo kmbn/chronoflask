@@ -19,7 +19,6 @@ from datetime import datetime
 from passlib.context import CryptContext
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 import ujson
-# from setup import *
 from db import *
 from main.views import main
 from auth.views import auth
