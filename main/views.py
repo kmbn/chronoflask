@@ -5,8 +5,9 @@ from datetime import datetime
 from passlib.context import CryptContext
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 import ujson
-from setup import *
+#from setup import *
 from db import *
+from .forms import RawEntryForm
 
 main = Blueprint('main', __name__)
 
@@ -30,8 +31,6 @@ def clean_up_entry(raw_entry, tags):
 
 
 def create_timestamp(current_time):
-    #Convert datetime object to string for use with JSON.
-    #May not be necessary with alterate storage or extensions.
     timestamp = datetime.strftime(current_time, '%Y-%m-%d %H:%M:%S')
     return timestamp
 
@@ -54,16 +53,56 @@ def find_and_process_tags(raw_entry):
 
 def create_new_entry(clean_entry, timestamp, tags):
     insert_record('entries', {'entry': clean_entry, 'timestamp': timestamp, \
-                    'tags': tags})
-    return get_input()
+                    'tags': tags, 'creator_id': session.get('user_id')})
+    return redirect(url_for('main.browse_all_entries'))
 
 
 #@is_logged_in
-@main.route('/')
+@main.route('/', methods=['GET', 'POST'])
 def browse_all_entries():
+    form = RawEntryForm()
+    if form.validate_on_submit():
+        return parse_input(form.raw_entry.data, datetime.utcnow())
     all_entries = search_records('entries', \
                                  Query().creator_id == session.get('user_id'))
-    return render_template('home.html', all_entries=all_entries)
+    return render_template('home.html', all_entries=all_entries, form=form)
+
+
+def parse_input(raw_entry, current_time):
+    if raw_entry == 'browse all':
+        return redirect(url_for('main.browse_all_entries'))
+    elif raw_entry == 'quit':
+        return quit()
+    elif raw_entry[:3] == 't: ':
+        return view_single_entry(raw_entry[3:])
+    elif raw_entry[:5] == 'tag: ':
+        return view_entries_for_tag(raw_entry[5:])
+    elif raw_entry[:5] == 'day: ':
+        return view_entries_for_day(raw_entry[5:])
+    elif raw_entry == 'register':
+        register()
+        return get_input()
+    elif raw_entry == 'login':
+        return redirect(url_for('auth.login'))
+    elif raw_entry == 'logout':
+        return redirect(url_for('auth.logout'))
+    elif raw_entry == 'change email':
+        change_email()
+        return get_input()
+    elif raw_entry == 'change password':
+        change_password()
+        return get_input()
+    elif raw_entry[:14] == 'reset password':
+        reset_password(raw_entry[15:])
+        return get_input()
+    elif raw_entry == 'about':
+        return redirect(url_for('admin.get_details'))
+    elif raw_entry == 'rename chrono':
+        return redirect(url_for('admin.rename_chronofile'))
+    elif raw_entry == 'rename author':
+        return redirect(url_for('admin.rename_author'))
+    else:
+        return process_entry(raw_entry, current_time)
 
 
 def view_single_entry(timestamp):

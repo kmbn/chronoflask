@@ -2,7 +2,7 @@ from flask import Flask, session, redirect, url_for, render_template, flash, \
                   Blueprint
 admin = Blueprint('admin', __name__)
 import ujson
-from setup import *
+# from setup import *
 from db import *
 from chronoflask import *
 from auth import *

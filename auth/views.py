@@ -4,7 +4,7 @@ from passlib.context import CryptContext
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 import ujson
 from db import *
-from setup import *
+# from setup import *
 
 auth = Blueprint('auth', __name__)
 
