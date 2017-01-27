@@ -5,7 +5,6 @@ from datetime import datetime
 from passlib.context import CryptContext
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 import ujson
-#from setup import *
 from db import *
 from .forms import RawEntryForm
 
@@ -45,9 +44,9 @@ def find_and_process_tags(raw_entry):
     for i in bag_of_words:
         if i[0] == '#':
             if i[-1] in punctuation: # Clean tag if it ends w/ punctuation
-                tags.append(i[:-1])
+                tags.append(i[1:-1])
             else:
-                tags.append(i)
+                tags.append(i[1:])
     return tags
 
 
@@ -66,6 +65,21 @@ def browse_all_entries():
     all_entries = search_records('entries', \
                                  Query().creator_id == session.get('user_id'))
     return render_template('home.html', all_entries=all_entries, form=form)
+
+
+@main.route('tags/<tag>', methods=['GET', 'POST'])
+def view_entries_for_tag(tag):
+    '''Return entries for given tag in chronological order.'''
+    form = RawEntryForm()
+    if form.validate_on_submit():
+        return parse_input(form.raw_entry.data, datetime.utcnow())
+    entries_for_tag = search_records('entries', Query().tags.all([tag]))
+    # result = get_db().search(Query().tags.all(tag))
+    return render_template('tag.html', form=form, tag=tag, \
+                           entries_for_tag=entries_for_tag)
+
+
+
 
 
 def parse_input(raw_entry, current_time):
@@ -119,21 +133,6 @@ def view_single_entry(timestamp):
     return get_input()
 
 
-
-def view_entries_for_tag(tag):
-    '''
-    Return entries for given tag in chronological order.
-    '''
-    result = search_records('entries', Query().tags.all([tag]))
-    # result = get_db().search(Query().tags.all(tag))
-    if not result:
-        print('No entries for that tag.')
-    else:
-        print('Entries for tag %s:' % (tag))
-        for i in result:
-            print('%s: %s :: filed under %s' % (i['timestamp'], \
-                  i['entry'], i['tags']))
-    return get_input()
 
 
 
