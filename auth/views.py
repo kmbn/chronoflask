@@ -29,6 +29,7 @@ def is_logged_in(func):
 
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
+    details = get_record('admin', Query().creator_id == 1)
     if not get_record('auth', Query().email.exists()):
         flash('You need to register first.')
         return redirect(url_for('auth.register'))
@@ -42,7 +43,7 @@ def login():
         session['user_id'] = user_id
         flash('You are now logged in. User id: %s' % (user_id))
         return redirect(url_for('main.browse_all_entries'))
-    return render_template('login.html', form=form)
+    return render_template('login.html', form=form, details=details)
 
 
 @auth.route('/logout')
@@ -56,6 +57,7 @@ def logout():
 def register():
     # if not get_record('auth', Query().email.exists()):
     # need to handle the case where registration has already occured
+    details = get_record('admin', Query().creator_id == 1)
     form = RegistrationForm()
     if form.validate_on_submit():
         password_hash = pwd_context.hash(form.password.data)
@@ -70,11 +72,12 @@ def register():
                       'creator_id': creator_id})
         flash('Registration successful. You can login now.')
         return redirect(url_for('auth.login'))
-    return render_template('register.html', form=form)
+    return render_template('register.html', form=form, details=details)
 
 
 @auth.route('/reset_password', methods=['GET', 'POST'])
 def request_reset():
+    details = get_record('admin', Query().creator_id == 1)
     form = ResetPasswordForm()
     if form.validate_on_submit():
         email = form.email.data
@@ -84,11 +87,12 @@ def request_reset():
                    'email/reset_password', token=token)
         flash('Your password reset token has been sent.')
         return redirect(url_for('admin.get_details'))
-    return render_template('reset_password.html', form=form)
+    return render_template('reset_password.html', form=form, details=details)
 
 
 @auth.route('/reset_password/<token>', methods=['GET', 'POST'])
 def confirm_password_reset(token):
+    details = get_record('admin', Query().creator_id == 1)
     s = Serializer(current_app.config['SECRET_KEY'])
     try:
         data = s.loads(token)
@@ -106,11 +110,13 @@ def confirm_password_reset(token):
                                  eids=[user_id])
         flash('Password updated—you can now log in.')
         return redirect(url_for('auth.login'))
-    return render_template('set_new_password.html', form=form, token=token)
+    return render_template('set_new_password.html', form=form, token=token, \
+                           details=details)
 
 
 @auth.route('/change_email', methods=['GET', 'POST'])
 def change_email():
+    details = get_record('admin', Query().creator_id == 1)
     form = ChangeEmailForm()
     if form.validate_on_submit():
         new_email = form.new_email.data
@@ -118,11 +124,12 @@ def change_email():
         get_table('auth').update({'email': new_email}, eids=user_id)
         flash('Your email address has been updated.')
         return redirect(url_for('admin.get_details'))
-    return render_template('change_email.html', form=form)
+    return render_template('change_email.html', form=form, details=details)
 
 
 @auth.route('/change_password', methods=['GET', 'POST'])
 def change_password():
+    details = get_record('admin', Query().creator_id == 1)
     form = ChangePasswordForm()
     if form.validate_on_submit():
         new_password_hash = pwd_context.hash(form.new_password.data)
@@ -130,7 +137,7 @@ def change_password():
                              eids=[session.get('user_id')])
         flash('Your password has been updated.')
         return redirect(url_for('admin.get_details'))
-    return render_template('change_password.html', form=form)
+    return render_template('change_password.html', form=form, details=details)
 
 
 def generate_confirmation_token(user_id, expiration=3600):
