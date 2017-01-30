@@ -1,15 +1,19 @@
 from flask import Flask, session, redirect, url_for, render_template, flash, \
-                  Blueprint
+                  Blueprint, current_app
 from passlib.context import CryptContext
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 import ujson
 from db import *
 
+
 pwd_context = CryptContext(schemes=["pbkdf2_sha256"])
 from .forms import ChangeEmailForm, ChangePasswordForm, \
-                       RegistrationForm, LoginForm
+                       RegistrationForm, LoginForm, ResetPasswordForm, \
+                       SetNewPasswordForm
 
 auth = Blueprint('auth', __name__)
+
+from chronoflask import send_email
 
 '''# Decorator to prevent access by non-logged users.
 def is_logged_in(func):
@@ -68,41 +72,42 @@ def register():
         return redirect(url_for('auth.login'))
     return render_template('register.html', form=form)
 
-'''
-def reset_password(token=None):
-    if not token:
-        email = input('Enter email to receive password reset token: ')
-        if not get_record('auth', Query().email == email):
-            print('That email is not registered.')
-            return get_input()
-        user_id = get_element_id('admin', email)
+
+@auth.route('/reset_password', methods=['GET', 'POST'])
+def request_reset():
+    form = ResetPasswordForm()
+    if form.validate_on_submit():
+        email = form.email.data
+        user_id = get_element_id('auth', Query().email == email)
         token = generate_confirmation_token(user_id)
-        print('Your password reset token is %s' % (token))
-        return get_input()
-    serial = Serializer('secret_key')
-    user_id = Session.s['user_id']
-    print(token)
+        send_email(email, 'Link to reset your password',
+                   'email/reset_password', token=token)
+        flash('Your password reset token has been sent.')
+        return redirect(url_for('admin.get_details'))
+    return render_template('reset_password.html', form=form)
+
+
+@auth.route('/reset_password/<token>', methods=['GET', 'POST'])
+def confirm_password_reset(token):
+    s = Serializer(current_app.config['SECRET_KEY'])
     try:
-        data = serial.loads(token)
+        data = s.loads(token)
     except:
-        print('The token is invalid or has expired.')
-        return get_input()
-    else:
-        if data.get('confirm') != user_id:
-            print('The token is invalid or has expired.')
-            return get_input()
-        else:
-            new_password = input('Enter new password: ')
-            verify_password = input('Re-enter new password: ')
-            if new_password != verify_password:
-                print('Passwords do not match.')
-                return get_input()
-            new_password_hash = pwd_context.hash(new_password)
-            update_record('auth', {'password_hash': new_password_hash}, \
-                              eids=data.get('confirm'))
-            print('Your password has been updated.')
-            return get_input()
-'''
+        flash('The password reset link is invalid or has expired.')
+        return redirect(url_for('auth.request_reset'))
+    if not data.get('confirm'):
+        flash('The password reset link is invalid or has expired.')
+        return redirect(url_for('auth.request_reset'))
+    user_id = data.get('confirm')
+    form = SetNewPasswordForm()
+    if form.validate_on_submit():
+        new_password_hash = pwd_context.hash(form.new_password.data)
+        get_table('auth').update({'password_hash': new_password_hash}, \
+                                 eids=[user_id])
+        flash('Password updated—you can now log in.')
+        return redirect(url_for('auth.login'))
+    return render_template('set_new_password.html', form=form, token=token)
+
 
 @auth.route('/change_email', methods=['GET', 'POST'])
 def change_email():
@@ -129,5 +134,5 @@ def change_password():
 
 
 def generate_confirmation_token(user_id, expiration=3600):
-    serial = Serializer('secret_key', expiration)
+    serial = Serializer(current_app.config['SECRET_KEY'], expiration)
     return serial.dumps({'confirm': user_id})

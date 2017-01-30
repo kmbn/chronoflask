@@ -1,5 +1,5 @@
 from flask_wtf import Form
-from wtforms import PasswordField, StringField, SubmitField
+from wtforms import PasswordField, StringField, SubmitField, ValidationError
 from wtforms.validators import Required, Length, Email, EqualTo
 from db import *
 from .views import pwd_context
@@ -7,14 +7,16 @@ from .views import pwd_context
 
 
 def account_exists(form, field):
-    if len(field.data) > 50:
-        raise ValidationError('Field must be less than 50 characters')
-
-
-def account_exists(form, field):
     user = get_record('auth', Query().email == field.data)
     if not user:
         raise ValidationError('Create an account first.')
+
+
+def email_exists(form, field):
+    user = get_record('auth', Query().email == field.data)
+    if not user:
+        raise ValidationError('Please verify that you typed your email \
+            correctly.')
 
 
 def password_correct(form, password, email):
@@ -90,3 +92,18 @@ class ChangePasswordForm(Form):
     verify_password = PasswordField('Re-enter new password', \
                                     validators=[Required(), Length(min=12)])
     submit = SubmitField('Change password')
+
+
+class ResetPasswordForm(Form):
+    email = StringField('Your registered email address',
+                        validators=[Required(), Email(), email_exists])
+    submit = SubmitField('Request password reset link')
+
+
+class SetNewPasswordForm(Form):
+    new_password = PasswordField('New password', validators=[Required(), \
+                                 Length(min=12), EqualTo('verify_password', \
+                                 message='New passwords must match.')])
+    verify_password = PasswordField('Re-enter new password', \
+                                    validators=[Required(), Length(min=12)])
+    submit = SubmitField('Set new password')
