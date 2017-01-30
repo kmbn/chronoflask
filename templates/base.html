@@ -33,8 +33,12 @@
                 </ul>
             {% else %}
                 <ul class="nav navbar-nav navbar-right">
-                    <li><a href="{{ url_for('auth.login') }}">Login</a></li>
+                    {% if register %}
                     <li><a href="{{ url_for('auth.register') }}">Register</a></li>
+                    {% else %}
+                    <li><a href="{{ url_for('auth.login') }}">Login</a></li>
+                    {% endif %}
+                    }
                 </ul>
             {% endif %}
         </div>

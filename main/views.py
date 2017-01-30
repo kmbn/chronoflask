@@ -1,6 +1,6 @@
 import os
 from flask import Flask, session, g, redirect, url_for, \
-                  render_template, flash, Blueprint
+                  render_template, flash, Blueprint, current_app
 from flask_bootstrap import Bootstrap
 from datetime import datetime
 from passlib.context import CryptContext
@@ -18,7 +18,14 @@ main = Blueprint('main', __name__)
 def browse_all_entries():
     details = get_record('admin', Query().creator_id == 1)
     if not session.get('logged_in'):
-        return render_template('welcome.html', details=details)
+        if not details:
+            register = True
+        else:
+            register = False
+        details = {'chronofile_name': current_app.config['DEFAULT_NAME'], \
+                   'author_name': current_app.config['DEFAULT_AUTHOR']}
+        return render_template('welcome.html', details=details, \
+                               register=register)
     form = RawEntryForm()
     if form.validate_on_submit():
         return parse_input(form.raw_entry.data, datetime.utcnow())

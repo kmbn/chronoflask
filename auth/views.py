@@ -19,6 +19,8 @@ from chronoflask import send_email
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
     details = get_record('admin', Query().creator_id == 1)
+    print(details)
+    print(current_app.config['DEFAULT_NAME'])
     if not get_record('auth', Query().email.exists()):
         flash('You need to register first.')
         return redirect(url_for('auth.register'))
@@ -30,6 +32,7 @@ def login():
         session['logged_in'] = True
         user_id = get_element_id('auth', Query().email == form.email.data)
         session['user_id'] = user_id
+        flash(user_id)
         return redirect(url_for('main.browse_all_entries'))
     return render_template('login.html', form=form, details=details)
 
@@ -45,29 +48,35 @@ def logout():
 
 @auth.route('/register', methods=['GET', 'POST'])
 def register():
-    # if not get_record('auth', Query().email.exists()):
-    # need to handle the case where registration has already occured
     details = get_record('admin', Query().creator_id == 1)
+    if details:
+        flash('A user is already registered. Login.')
+        return redirect(url_for('auth.login'))
+    details = {'chronofile_name': current_app.config['DEFAULT_NAME'], \
+               'author_name': current_app.config['DEFAULT_AUTHOR']}
+    register = True
     form = RegistrationForm()
     if form.validate_on_submit():
         password_hash = pwd_context.hash(form.password.data)
         # Create account and get creator id
         creator_id = insert_record('auth', {'email': form.email.data, \
                                    'password_hash': password_hash})
-        # Create a chronofile
-        default_chronofile_name = 'Chronofile'
-        default_author_name = 'Chronologist'
-        insert_record('admin', {'chronofile_name': default_chronofile_name, \
-                      'author_name': default_author_name, \
-                      'creator_id': creator_id})
+        insert_record('admin', {'chronofile_name': \
+                                current_app.config['DEFAULT_NAME'], \
+                                'author_name': \
+                                current_app.config['DEFAULT_AUTHOR'], \
+                                'creator_id': creator_id})
         flash('Registration successful. You can login now.')
         return redirect(url_for('auth.login'))
-    return render_template('register.html', form=form, details=details)
+    return render_template('register.html', form=form, details=details, \
+                           register=register)
 
 
 @auth.route('/reset_password', methods=['GET', 'POST'])
 def request_reset():
     details = get_record('admin', Query().creator_id == 1)
+    if not details:
+        return redirect(url_for('main.browse_all_entries'))
     form = ResetPasswordForm()
     if form.validate_on_submit():
         email = form.email.data
@@ -83,6 +92,8 @@ def request_reset():
 @auth.route('/reset_password/<token>', methods=['GET', 'POST'])
 def confirm_password_reset(token):
     details = get_record('admin', Query().creator_id == 1)
+    if not details:
+        return redirect(url_for('main.browse_all_entries'))
     s = Serializer(current_app.config['SECRET_KEY'])
     try:
         data = s.loads(token)

@@ -14,7 +14,8 @@ a tag, and view a list of tags.
 Private by default; can be made public.
 '''
 import os
-from flask import Flask, session, g, redirect, url_for, render_template, flash
+from flask import Flask, session, g, redirect, url_for, render_template, \
+                  flash, current_app
 from flask_bootstrap import Bootstrap
 from flask_mail import Mail, Message
 from threading import Thread
@@ -37,9 +38,11 @@ app.config['MAIL_SERVER'] = os.environ.get('MAIL_SERVER')
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
-app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD') or 'logintopersonalemailaccount'
+app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
 app.config['MAIL_SUBJECT_PREFIX'] = '[Chronoflask]'
 app.config['MAIL_SENDER'] = 'Chronoflask <admin@chronoflask.com>'
+app.config['DEFAULT_NAME'] = 'Chronoflask'
+app.config['DEFAULT_AUTHOR'] = 'Chronologist'
 
 
 bootstrap = Bootstrap(app)
@@ -64,15 +67,6 @@ def send_email(to, subject, template, **kwargs):
     thr = Thread(target=send_async_email, args=[app, msg])
     thr.start()
     return thr
-
-
-def is_logged_in():
-    if not session.get('logged_in'):
-        print('no')
-        return redirect(url_for('main.browse_all_entries'))
-    else:
-        print('ok')
-        return True
 
 
 if __name__ == '__main__':
