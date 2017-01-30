@@ -13,5 +13,13 @@
         <p>Author name:</p>
         <p>{{ details['author_name'] }} <a href="{{ url_for('admin.rename_author') }}">[edit]</a></p>
     </div>
+    <div>
+        <p>Change email address:</p>
+        <p><a href="{{ url_for('auth.change_email') }}">[click here]</a></p>
+    </div>
+    <div>
+        <p>Change password:</p>
+        <p><a href="{{ url_for('auth.change_password') }}">[click here]</a></p>
+    </div>
 
 {% endblock %}

@@ -130,7 +130,7 @@ def change_password():
                              eids=[session.get('user_id')])
         flash('Your password has been updated.')
         return redirect(url_for('admin.get_details'))
-    return render_template('change_password', form=form)
+    return render_template('change_password.html', form=form)
 
 
 def generate_confirmation_token(user_id, expiration=3600):
