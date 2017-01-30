@@ -12,7 +12,7 @@
     <div>
         <ol>
         {% for entry in entries_for_day %}
-            <li><p><a href="{{ url_for('main.view_single_entry', timestamp=entry['timestamp'], _external=True) }}">{{ entry['timestamp'][12:] }}</a>: {{entry['entry']}}</br>
+            <li><p><a href="{{ url_for('main.view_single_entry', timestamp=entry['timestamp'], _external=True) }}">{{ entry['timestamp'][11:] }}</a>: {{entry['entry']}}</br>
             Tags:
                 {% for tag in entry['tags'] %}
                     <a href="{{ url_for('main.view_entries_for_tag', tag=tag, _external=True) }}">{{ tag }}</a>

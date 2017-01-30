@@ -1,6 +1,12 @@
 {% extends "bootstrap/base.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
 
+{% block styles %}
+{{super()}}
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='custom.css') }}">
+{% endblock %}
+
 {% block title %}Chronoflask{% endblock %}
 
 {% block navbar %}
@@ -18,6 +24,7 @@
         <div class="navbar-collapse collapse">
             {% if session.logged_in %}
                 <ul class="nav navbar-nav navbar-left">
+                    <li><a href="{{ url_for('main.view_all_days') }}">Days</a>
                     <li><a href="{{ url_for('main.view_all_tags') }}">Tags</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
@@ -36,13 +43,25 @@
 {% endblock %}
 
 {% block content %}
+    <div class="container">
     {% for message in get_flashed_messages() %}
         <div class="alert alert-info">
         <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
         {{ message }}
         </div>
     {% endfor %}
+    </div>
     <div class="container">
         {% block page_content %}{% endblock %}
     </div>
+
+    {% block footer %}
+        <div class="modal-footer">
+            <div class="container">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>&#169; 2017 {{ details['author_name'] }}</li>
+                </ul>
+            </div>
+        </div>
+    {% endblock %}
 {% endblock %}

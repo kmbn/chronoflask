@@ -15,17 +15,6 @@ auth = Blueprint('auth', __name__)
 
 from chronoflask import send_email
 
-'''# Decorator to prevent access by non-logged users.
-def is_logged_in(func):
-    def wrapper(*args):
-        if not session.get('logged_in'):
-            flash('You need to be logged in to do that.')
-            return redirect(url_for('/login'))
-        else:
-            return func(*args)
-    return wrapper
-'''
-
 
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
@@ -41,16 +30,17 @@ def login():
         session['logged_in'] = True
         user_id = get_element_id('auth', Query().email == form.email.data)
         session['user_id'] = user_id
-        flash('You are now logged in. User id: %s' % (user_id))
         return redirect(url_for('main.browse_all_entries'))
     return render_template('login.html', form=form, details=details)
 
 
 @auth.route('/logout')
 def logout():
+    if not session.get('logged_in'):
+        return redirect(url_for('main.browse_all_entries'))
     session['logged_in'] = None
     flash('You have been logged out.')
-    return redirect(url_for('auth.login'))
+    return redirect(url_for('main.browse_all_entries'))
 
 
 @auth.route('/register', methods=['GET', 'POST'])
@@ -116,6 +106,8 @@ def confirm_password_reset(token):
 
 @auth.route('/change_email', methods=['GET', 'POST'])
 def change_email():
+    if not session.get('logged_in'):
+        return redirect(url_for('main.browse_all_entries'))
     details = get_record('admin', Query().creator_id == 1)
     form = ChangeEmailForm()
     if form.validate_on_submit():
@@ -129,12 +121,14 @@ def change_email():
 
 @auth.route('/change_password', methods=['GET', 'POST'])
 def change_password():
+    if not session.get('logged_in'):
+        return redirect(url_for('main.browse_all_entries'))
     details = get_record('admin', Query().creator_id == 1)
     form = ChangePasswordForm()
     if form.validate_on_submit():
         new_password_hash = pwd_context.hash(form.new_password.data)
         get_table('auth').update({'password_hash': new_password_hash}, \
-                             eids=[session.get('user_id')])
+                                 eids=[session.get('user_id')])
         flash('Your password has been updated.')
         return redirect(url_for('admin.get_details'))
     return render_template('change_password.html', form=form, details=details)

@@ -2,7 +2,7 @@
 {% block page_content %}
 
     <div class="page-header">
-        <h1>Home</h1>
+        <h1>Entries</h1>
     </div>
 
     <div>
@@ -11,7 +11,7 @@
     {% else %}
         <ol>
         {% for entry in all_entries %}
-            <li><p><a href="{{ url_for('main.view_entries_for_day', day=entry['timestamp'][:11], _external=True) }}">{{ entry['timestamp'][:11] }}</a> <a href="{{ url_for('main.view_single_entry', timestamp=entry['timestamp'], _external=True) }}">{{ entry['timestamp'][12:] }}</a>: {{entry['entry']}}</br>
+            <li><p><a href="{{ url_for('main.view_entries_for_day', day=entry['timestamp'][:10], _external=True) }}">{{ entry['timestamp'][:10] }}</a> <a href="{{ url_for('main.view_single_entry', timestamp=entry['timestamp'], _external=True) }}">{{ entry['timestamp'][11:] }}</a>: {{entry['entry']}}</br>
             Tags:
                 {% for tag in entry['tags'] %}
                     <a href="{{ url_for('main.view_entries_for_tag', tag=tag, _external=True) }}">{{ tag }}</a>

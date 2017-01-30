@@ -30,6 +30,8 @@ from admin.views import admin
 
 app = Flask(__name__)
 
+
+#app.config['DEBUG'] = os.environ.get('DEBUG')
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
 app.config['MAIL_SERVER'] = os.environ.get('MAIL_SERVER')
 app.config['MAIL_PORT'] = 587
@@ -38,26 +40,16 @@ app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
 app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD') or 'logintopersonalemailaccount'
 app.config['MAIL_SUBJECT_PREFIX'] = '[Chronoflask]'
 app.config['MAIL_SENDER'] = 'Chronoflask <admin@chronoflask.com>'
-# app.config['CHRONOFLASK_ADMIN'] = os.environ.get('CHRONOFLASK_ADMIN')
+
 
 bootstrap = Bootstrap(app)
 mail = Mail(app)
+
 
 app.register_blueprint(main, url_prefix='/')
 app.register_blueprint(auth, url_prefix='/auth')
 app.register_blueprint(admin, url_prefix='/admin')
 
-'''
-# Load default config and override config from an environment variable
-app.config.update(dict(
-    # DATABASE=os.path.join(app.root_path, 'base.db'),
-    DEBUG=True,
-    SECRET_KEY='development key',
-    # USERNAME='admin',
-    # PASSWORD='default'
-))
-app.config.from_envvar('APP_SETTINGS', silent=True)
-'''
 
 def send_async_email(app, msg):
     with app.app_context():
@@ -73,6 +65,15 @@ def send_email(to, subject, template, **kwargs):
     thr.start()
     return thr
 
+
+def is_logged_in():
+    if not session.get('logged_in'):
+        print('no')
+        return redirect(url_for('main.browse_all_entries'))
+    else:
+        print('ok')
+        return True
+
+
 if __name__ == '__main__':
-    #init_db()
     app.run(debug=True)
