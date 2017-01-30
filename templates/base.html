@@ -16,17 +16,20 @@
             <a class="navbar-brand" href="/">Chronoflask</a>
         </div>
         <div class="navbar-collapse collapse">
-            <ul class="nav navbar-nav">
-                {% if session.logged_in %}
-                    <li><a href="/">Home</a></li>
+            {% if session.logged_in %}
+                <ul class="nav navbar-nav navbar-left">
+                    <li><a href="{{ url_for('main.view_all_tags') }}">Tags</a></li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
                     <li><a href="{{ url_for('admin.get_details') }}">Admin</a></li>
                     <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
-                {% else %}
-                    <li><a href="/">Home</a></li>
+                </ul>
+            {% else %}
+                <ul class="nav navbar-nav navbar-right">
                     <li><a href="{{ url_for('auth.login') }}">Login</a></li>
-                    <li><a href="{{ url_for('auth.register') }}">Sign up!</a></li>
-                {% endif %}
-            </ul>
+                    <li><a href="{{ url_for('auth.register') }}">Register</a></li>
+                </ul>
+            {% endif %}
         </div>
     </div>
 </div>
