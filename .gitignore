@@ -8,10 +8,15 @@
 ehthumbs.db
 Thumbs.db
 
+# Caches #
+######################
+.pyc
+
 # Specific folders #
 ######################
 /venv
+/__pycache__
 
 # Specific files #
 ######################
-chronofile_db.json
+db.json
