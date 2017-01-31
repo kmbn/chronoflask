@@ -1,23 +1,7 @@
-'''
-Chronoflask:
-A minimalist diary/journal application using Python 3, Flask, and TinyDB
-inspired by Warren Ellis's Chronofile Minimal and Buckminster Fuller's
-Dymaxion Chronofile.
-
-Add new entries (with or witout hashtags) in a single input field. Each
-entry is stored with a UTC created-on timestamp.
-
-View recent entries, view all entries for a single day or date-range
-(chronologically), view a single entry, view all entries associated with
-a tag, and view a list of tags.
-
-Private by default; can be made public.
-'''
 import os
 from flask import Flask, session, g, redirect, url_for, render_template, \
                   flash, current_app
 from flask_bootstrap import Bootstrap
-from flask_pagedown import PageDown
 from flask_mail import Mail, Message
 from threading import Thread
 from datetime import datetime
@@ -47,7 +31,6 @@ app.config['DEFAULT_AUTHOR'] = 'Chronologist'
 
 bootstrap = Bootstrap(app)
 mail = Mail(app)
-pagedown = PageDown(app)
 
 
 app.register_blueprint(main, url_prefix='/')
