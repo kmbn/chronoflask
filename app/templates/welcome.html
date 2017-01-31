@@ -7,7 +7,10 @@
 
     <div>
         {% if register == True %}
-        <p>Please register.</p>
+        <p>Chronoflask is a minimalist diary/journal application using Python 3, Flask, and TinyDB inspired by Warren Ellis's Chronofile Minimal and Buckminster Fuller's Dymaxion Chronofile.</p></br>
+        <p>Add new entries (with or witout hashtags) in a single input field. Each entry is stored with a UTC timestamp.</p></br>
+        <p>View recent entries, view all entries for a single day or date-range (chronologically), view a single entry, view all entries associated with a tag, and view a list of tags.</p></br>
+        </p>Private by default. Please <a href="{{ url_for('auth.register') }}">register</a> to begin using Chronoflask.</p>
         {% else %}
         <p>Please <a href="{{ url_for('auth.login') }}">log in</a>.</p>
         {% endif %}
