@@ -1,0 +1,70 @@
+h1              { font-size: 8rem;
+                  text-align: center;
+                  font-family: 'futura-pt',Futura,'Open Sans',sans-serif;
+                  font-weight: 800;
+                  color: #383636;
+                  text-transform: uppercase;
+                }
+
+p               { font-size: 2rem;
+                  color: #383636;
+                  font-family: 'ff-meta-serif-sc-web-pro',Georgia,'EB Garamond', serif;
+                }
+
+body            { background-color:
+                }
+
+.navbar-inverse { border-radius: 0 !important;
+                  -webkit-border-radius: 0 !important;
+                  -moz-border-radius: 0 !important;
+                  background-color: #383636;
+                }
+
+.navbar-brand   { font-size: 2.3rem;
+                  font-family: 'futura-pt',Futura,'Open Sans',sans-serif;
+                  color: #AAAAAA;
+                }
+
+.navbar-nav     { font-size: 1.8rem;
+                  font-family: 'futura-pt',Futura,'Open Sans',sans-serif;
+                  color: #AAAAAA;
+                }
+
+.navbar-footer  { font-size: 1.5rem;
+                  color: #AAAAAA;
+                  font-family: 'ff-meta-serif-sc-web-pro',Georgia,'EB Garamond',serif;
+                  font-variant: small-caps;
+                }
+
+.page-header    { margin-bottom: 40px;
+                }
+
+.control-label  { font-size: 1.8rem;
+                  color: #383636;
+                  font-family: 'futura-pt',Futura,'Open Sans',sans-serif;
+                }
+
+.form-control   { font-size: 2rem;
+                  color: #383636;
+                  font-family: 'ff-meta-serif-sc-web-pro',Georgia,'EB Garamond',serif;
+                  outline: none; outline-style: none;
+                  background:white; border:0px solid #ccc;
+                  border-bottom: 3px solid #383636;
+                  border-radius: 0 !important;
+                  -webkit-border-radius: 0 !important;
+                  -moz-border-radius: 0 !important;
+                }
+
+.btn-default    { font-size: 1.8rem;
+                  color: #383636;
+                  font-family: 'futura-pt',Futura,'Open Sans',sans-serif;
+                }
+
+.modal-footer   { margin-top: 50px;
+                  border: none;
+                }
+
+.alert-info     { font-family: 'ff-meta-serif-sc-web-pro',Georgia,'EB Garamond', serif;
+                }
+
+@media (min-width: 992px) {.container-content { width: 750px;}}

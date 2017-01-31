@@ -9,15 +9,16 @@
     {% if all_tags|length == 0 %}
         <p>There are no tags yet.</p>
     {% else %}
-        <ol>
+        <ul>
         {% for tag in all_tags %}
             <li><p>
-            <a href="{{ url_for('main.view_entries_for_tag', tag=tag, _external=True) }}">{{ tag }}</a>
+            <a href="{{ url_for('main.view_entries_for_tag', tag=tag, _external=True) }}">#{{ tag }}</a>
             </p></li>
         {% endfor %}
-        </ol>
+        </ul>
     {% endif %}
     </div>
+    </br>
     <div>
         {{ wtf.quick_form(form) }}
     </div>

@@ -17,6 +17,7 @@ import os
 from flask import Flask, session, g, redirect, url_for, render_template, \
                   flash, current_app
 from flask_bootstrap import Bootstrap
+from flask_pagedown import PageDown
 from flask_mail import Mail, Message
 from threading import Thread
 from datetime import datetime
@@ -32,7 +33,6 @@ from admin.views import admin
 app = Flask(__name__)
 
 
-#app.config['DEBUG'] = os.environ.get('DEBUG')
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
 app.config['MAIL_SERVER'] = os.environ.get('MAIL_SERVER')
 app.config['MAIL_PORT'] = 587
@@ -47,6 +47,7 @@ app.config['DEFAULT_AUTHOR'] = 'Chronologist'
 
 bootstrap = Bootstrap(app)
 mail = Mail(app)
+pagedown = PageDown(app)
 
 
 app.register_blueprint(main, url_prefix='/')

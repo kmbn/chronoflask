@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block page_content %}
+
+    <div class="page-header">
+        {% if entry|length == 0 %}
+            <h1>No Entry</h1>
+        {% else %}
+            <h1>{{ timestamp[2:] }}</h1>
+        {% endif %}
+    </div>
+
+    <div>
+        <p>{{entry['entry']}}</br>
+        Tags:
+            {% if entry['tags']|length != 0 %}
+                    {% for tag in entry['tags'] %}
+                        <a href="{{ url_for('main.view_entries_for_tag', tag=tag, _external=True) }}">#{{ tag }}</a>
+                    {% endfor %}
+                {% else %}
+                    none
+                {% endif %}
+                </p></li>
+        </p>
+    </div>
+    </br>
+    <div>
+        {{ wtf.quick_form(form) }}
+    </div>
+
+{% endblock %}

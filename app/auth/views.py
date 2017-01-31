@@ -19,20 +19,16 @@ from chronoflask import send_email
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
     details = get_record('admin', Query().creator_id == 1)
-    print(details)
-    print(current_app.config['DEFAULT_NAME'])
     if not get_record('auth', Query().email.exists()):
         flash('You need to register first.')
         return redirect(url_for('auth.register'))
     if session.get('logged_in'):
-        flash('Already logged in.')
         return redirect(url_for('main.browse_all_entries'))
     form = LoginForm()
     if form.validate_on_submit():
         session['logged_in'] = True
         user_id = get_element_id('auth', Query().email == form.email.data)
         session['user_id'] = user_id
-        flash(user_id)
         return redirect(url_for('main.browse_all_entries'))
     return render_template('login.html', form=form, details=details)
 

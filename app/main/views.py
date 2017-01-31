@@ -18,12 +18,12 @@ main = Blueprint('main', __name__)
 def browse_all_entries():
     details = get_record('admin', Query().creator_id == 1)
     if not session.get('logged_in'):
-        if not details:
-            register = True
-        else:
+        if details:
             register = False
-        details = {'chronofile_name': current_app.config['DEFAULT_NAME'], \
-                   'author_name': current_app.config['DEFAULT_AUTHOR']}
+        else:
+            register = True
+            details = {'chronofile_name': current_app.config['DEFAULT_NAME'], \
+                       'author_name': current_app.config['DEFAULT_AUTHOR']}
         return render_template('welcome.html', details=details, \
                                register=register)
     form = RawEntryForm()
@@ -64,7 +64,7 @@ def view_single_entry(timestamp):
                            entry=entry, details=details)
 
 
-@main.route('tags')
+@main.route('tags', methods=['GET', 'POST'])
 def view_all_tags():
     if not session.get('logged_in'):
         return redirect(url_for('main.browse_all_entries'))
@@ -83,7 +83,7 @@ def view_all_tags():
                            details=details)
 
 
-@main.route('days')
+@main.route('days', methods=['GET', 'POST'])
 def view_all_days():
     if not session.get('logged_in'):
         return redirect(url_for('main.browse_all_entries'))

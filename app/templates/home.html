@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block page_content %}
+
+    <div class="page-header">
+        <h1>Stream</h1>
+    </div>
+
+    <div>
+    {% if all_entries|length == 0 %}
+        <p>Nothing in your chronofile yet.</p>
+    {% else %}
+        <ul>
+        {% for entry in all_entries %}
+            <li><p><a href="{{ url_for('main.view_entries_for_day', day=entry['timestamp'][:10], _external=True) }}">{{ entry['timestamp'][:10] }}</a> at <a href="{{ url_for('main.view_single_entry', timestamp=entry['timestamp'], _external=True) }}">{{ entry['timestamp'][11:] }}</a>:</br>{{entry['entry']}}</br>
+            Tags:
+                {% if entry['tags']|length != 0 %}
+                    {% for tag in entry['tags'] %}
+                        <a href="{{ url_for('main.view_entries_for_tag', tag=tag, _external=True) }}">#{{ tag }}</a>
+                    {% endfor %}
+                {% else %}
+                    none
+                {% endif %}
+                </p></li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+    </div>
+    </br>
+    <div>
+        {{ wtf.quick_form(form) }}
+    </div>
+
+{% endblock %}

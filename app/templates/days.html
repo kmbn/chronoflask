@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block page_content %}
+
+    <div class="page-header">
+        <h1>Days</h1>
+    </div>
+
+    <div>
+    {% if all_days|length == 0 %}
+        <p>No entries yet.</p>
+    {% else %}
+        <ul>
+        {% for day in all_days %}
+            <li><p>
+            <a href="{{ url_for('main.view_entries_for_day', day=day, _external=True) }}">{{ day }}</a>
+            </p></li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+    </div>
+    </br>
+    <div>
+        {{ wtf.quick_form(form) }}
+    </div>
+
+{% endblock %}

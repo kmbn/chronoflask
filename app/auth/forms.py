@@ -1,3 +1,4 @@
+from flask import session
 from flask_wtf import Form
 from wtforms import PasswordField, StringField, SubmitField, ValidationError
 from wtforms.validators import Required, Length, Email, EqualTo
@@ -56,54 +57,54 @@ def authorized(form, field):
 
 
 class LoginForm(Form):
-    email = StringField('Email', validators=[Required(), Email(), \
+    email = StringField('Email:', validators=[Required(), Email(), \
                         account_exists])
-    password = PasswordField('Password', validators=[Required(), \
+    password = PasswordField('Password:', validators=[Required(), \
                              PasswordCorrect('email')])
     submit = SubmitField('Log in')
 
 
 class RegistrationForm(Form):
-    email = StringField('Enter your email address', \
+    email = StringField('Enter your email address:', \
                         validators=[Required(), Email()])
-    password = PasswordField('Create a password', validators=[Required(), \
+    password = PasswordField('Create a password:', validators=[Required(), \
                              Length(min=12)])
     submit = SubmitField('Create account')
 
 
 class ChangeEmailForm(Form):
-    password = PasswordField('Your password', validators=[Required(), \
+    password = PasswordField('Enter your password:', validators=[Required(), \
                              authorized])
-    new_email = StringField('New email address', \
+    new_email = StringField('New email address:', \
                             validators=[Required(), Email(), \
                             EqualTo('verify_email', \
                             message='Emails must match')])
-    verify_email = StringField('Re-enter new email address', \
+    verify_email = StringField('Re-enter new email address:', \
                                validators=[Required(), Email()])
     submit = SubmitField('Change email')
 
 
 class ChangePasswordForm(Form):
-    current_password = PasswordField('Your current password', \
+    current_password = PasswordField('Your current password:', \
                                      validators=[Required(), authorized])
-    new_password = PasswordField('New password', validators=[Required(), \
+    new_password = PasswordField('Your new password:', validators=[Required(), \
                                  Length(min=12), EqualTo('verify_password', \
                                  message='New passwords must match.')])
-    verify_password = PasswordField('Re-enter new password', \
+    verify_password = PasswordField('Re-enter new password:', \
                                     validators=[Required(), Length(min=12)])
     submit = SubmitField('Change password')
 
 
 class ResetPasswordForm(Form):
-    email = StringField('Your registered email address',
+    email = StringField('Your registered email address:',
                         validators=[Required(), Email(), email_exists])
     submit = SubmitField('Request password reset link')
 
 
 class SetNewPasswordForm(Form):
-    new_password = PasswordField('New password', validators=[Required(), \
+    new_password = PasswordField('Enter your new password:', validators=[Required(), \
                                  Length(min=12), EqualTo('verify_password', \
                                  message='New passwords must match.')])
-    verify_password = PasswordField('Re-enter new password', \
+    verify_password = PasswordField('Re-enter new password:', \
                                     validators=[Required(), Length(min=12)])
     submit = SubmitField('Set new password')

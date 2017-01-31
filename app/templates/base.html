@@ -5,6 +5,8 @@
 {{super()}}
 <link rel="stylesheet"
       href="{{ url_for('static', filename='custom.css') }}">
+<link rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=EB+Garamond|Open+Sans" >
 {% endblock %}
 
 {% block title %}Chronoflask{% endblock %}
@@ -23,22 +25,19 @@
         </div>
         <div class="navbar-collapse collapse">
             {% if session.logged_in %}
-                <ul class="nav navbar-nav navbar-left">
+                <ul class="nav navbar-nav navbar-right">
                     <li><a href="{{ url_for('main.view_all_days') }}">Days</a>
                     <li><a href="{{ url_for('main.view_all_tags') }}">Tags</a></li>
-                </ul>
-                <ul class="nav navbar-nav navbar-right">
                     <li><a href="{{ url_for('admin.get_details') }}">Admin</a></li>
-                    <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
+                    <li><a href="{{ url_for('auth.logout') }}">Log out</a></li>
                 </ul>
             {% else %}
                 <ul class="nav navbar-nav navbar-right">
                     {% if register %}
                     <li><a href="{{ url_for('auth.register') }}">Register</a></li>
                     {% else %}
-                    <li><a href="{{ url_for('auth.login') }}">Login</a></li>
+                    <li><a href="{{ url_for('auth.login') }}">Log in</a></li>
                     {% endif %}
-                    }
                 </ul>
             {% endif %}
         </div>
@@ -47,7 +46,7 @@
 {% endblock %}
 
 {% block content %}
-    <div class="container">
+    <div class="container container-content">
     {% for message in get_flashed_messages() %}
         <div class="alert alert-info">
         <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
@@ -55,14 +54,14 @@
         </div>
     {% endfor %}
     </div>
-    <div class="container">
+    <div class="container container-content">
         {% block page_content %}{% endblock %}
     </div>
 
     {% block footer %}
         <div class="modal-footer">
-            <div class="container">
-                <ul class="nav navbar-nav navbar-right">
+            <div class="container container-content">
+                <ul class="nav navbar-nav navbar-right navbar-footer">
                     <li>&#169; 2017 {{ details['author_name'] }}</li>
                 </ul>
             </div>
