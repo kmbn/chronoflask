@@ -10,7 +10,7 @@ Thumbs.db
 
 # Caches #
 ######################
-.pyc
+*.pyc
 
 # Specific folders #
 ######################
