@@ -1,0 +1,12 @@
+Flask==0.10.1
+Flask-Bootstrap==3.0.3.1
+Flask-Mail==0.9.0
+Flask-WTF==0.9.4
+itsdangerous==0.23
+Jinja2==2.7.1
+Mako==0.9.1
+passlib==1.7.0
+ujson==1.35
+Werkzeug==0.10.4
+WTForms==1.0.5
+tinydb==3.2.2
