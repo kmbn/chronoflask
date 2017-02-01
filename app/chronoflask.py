@@ -1,22 +1,24 @@
 import os
-from flask import Flask, session, g, redirect, url_for, render_template, \
-                  flash, current_app
+from flask import Flask
 from flask_bootstrap import Bootstrap
 from flask_mail import Mail, Message
 from threading import Thread
-from datetime import datetime
-from passlib.context import CryptContext
-from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
-import ujson
-from db import *
-from admin import admin
-from auth import auth
-from main import main
 
 
+# Create app
 app = Flask(__name__)
 
 
+# Register blueprints
+from admin import admin
+app.register_blueprint(admin, url_prefix='/admin')
+from auth import auth
+app.register_blueprint(auth, url_prefix='/auth')
+from main import main
+app.register_blueprint(main, url_prefix='/')
+
+
+# Configure app
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
 app.config['MAIL_SERVER'] = os.environ.get('MAIL_SERVER')
 app.config['MAIL_PORT'] = 587
@@ -29,13 +31,12 @@ app.config['DEFAULT_NAME'] = 'Chronoflask'
 app.config['DEFAULT_AUTHOR'] = 'Chronologist'
 
 
+# Set up Bootstrap
 bootstrap = Bootstrap(app)
+
+
+# Set up email
 mail = Mail(app)
-
-
-app.register_blueprint(main, url_prefix='/')
-app.register_blueprint(auth, url_prefix='/auth')
-app.register_blueprint(admin, url_prefix='/admin')
 
 
 def send_async_email(app, msg):
@@ -53,5 +54,6 @@ def send_email(to, subject, template, **kwargs):
     return thr
 
 
+# Run app
 if __name__ == '__main__':
     app.run(debug=True)
