@@ -19,6 +19,7 @@ app.register_blueprint(main, url_prefix='/')
 
 
 # Configure app
+app.config['DEBUG'] = int(os.environ.get('DEBUG'))
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
 app.config['MAIL_SERVER'] = os.environ.get('MAIL_SERVER')
 app.config['MAIL_PORT'] = 587
@@ -56,4 +57,4 @@ def send_email(to, subject, template, **kwargs):
 
 # Run app
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=app.config['DEBUG'])
