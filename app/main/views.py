@@ -7,11 +7,9 @@ from passlib.context import CryptContext
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 import ujson
 from db import *
+from . import main
 from .forms import RawEntryForm
 from parse import *
-
-
-main = Blueprint('main', __name__)
 
 
 @main.route('/', methods=['GET', 'POST'])
@@ -79,6 +77,7 @@ def view_all_tags():
         for tag in entry['tags']:
             if tag not in all_tags:
                 all_tags.append(tag)
+    all_tags.sort()
     return render_template('tags.html', all_tags=all_tags, form=form, \
                            details=details)
 

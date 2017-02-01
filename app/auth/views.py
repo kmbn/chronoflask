@@ -5,14 +5,12 @@ from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 import ujson
 from db import *
 
-
 pwd_context = CryptContext(schemes=["pbkdf2_sha256"])
+
+from . import auth
 from .forms import ChangeEmailForm, ChangePasswordForm, \
                        RegistrationForm, LoginForm, ResetPasswordForm, \
                        SetNewPasswordForm
-
-auth = Blueprint('auth', __name__)
-
 from chronoflask import send_email
 
 

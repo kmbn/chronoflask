@@ -9,9 +9,9 @@ from passlib.context import CryptContext
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 import ujson
 from db import *
-from main.views import main
-from auth.views import auth
-from admin.views import admin
+from admin import admin
+from auth import auth
+from main import main
 
 
 app = Flask(__name__)
