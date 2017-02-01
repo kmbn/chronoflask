@@ -5,11 +5,11 @@ from db import *
 from . import admin
 from .forms import RenameChronofileForm, RenameAuthorForm
 
-# admin = Blueprint('admin', __name__)
-
 
 @admin.route('/')
 def get_details():
+    '''Display name of site, author, etc. as well as links to edit
+    those details and change email, password, etc.'''
     if not session.get('logged_in'):
         return redirect(url_for('main.browse_all_entries'))
     details = get_record('admin', \

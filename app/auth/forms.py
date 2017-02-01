@@ -6,7 +6,7 @@ from db import *
 from .views import pwd_context
 
 
-
+# Custom validators
 def account_exists(form, field):
     user = get_record('auth', Query().email == field.data)
     if not user:
@@ -20,23 +20,15 @@ def email_exists(form, field):
             correctly.')
 
 
-def password_correct(form, password, email):
-    user = get_record('auth', Query().email == email)
-    print(user)
+def authorized(form, field):
+    '''Verify user through password.'''
+    user = get_table('auth').get(eid=session.get('user_id'))
     if not pwd_context.verify(field.data, user['password_hash']):
-        raise ValidationError('Invalid password. Please try again.')
+        raise ValidationError('Invalid login credentials. Please try again.')
 
 
 class PasswordCorrect(object):
-    """
-    Compares the values of two fields.
-    :param fieldname:
-        The name of the other field to compare to.
-    :param message:
-        Error message to raise in case of a validation error. Can be
-        interpolated with `%(other_label)s` and `%(other_name)s` to provide a
-        more helpful error.
-    """
+    '''Verify email/password combo before validating form.'''
     def __init__(self, fieldname):
         self.fieldname = fieldname
 
@@ -48,12 +40,6 @@ class PasswordCorrect(object):
         user = get_record('auth', Query().email == email.data)
         if not pwd_context.verify(field.data, user['password_hash']):
             raise ValidationError('Invalid password. Please try again.')
-
-
-def authorized(form, field):
-    user = get_table('auth').get(eid=session.get('user_id'))
-    if not pwd_context.verify(field.data, user['password_hash']):
-        raise ValidationError('Invalid login credentials. Please try again.')
 
 
 class LoginForm(Form):

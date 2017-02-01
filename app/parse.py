@@ -3,14 +3,16 @@ from datetime import datetime
 from db import insert_record
 
 def parse_input(raw_entry, current_time):
+    '''Parse input and either create a new entry using the input
+    or call a function (that may take part of the input as an argument).'''
     if raw_entry == 'browse all':
         return redirect(url_for('main.browse_all_entries'))
-    elif raw_entry == 'quit':
-        return quit()
     elif raw_entry[:3] == 't: ':
-        return redirect(url_for('main.view_single_entry', timestamp=raw_entry[3:]))
+        return redirect(url_for('main.view_single_entry', \
+                                timestamp=raw_entry[3:]))
     elif raw_entry[:5] == 'tag: ':
-        return redirect(url_for('main.view_entries_for_tag', tag=raw_entry[5:]))
+        return redirect(url_for('main.view_entries_for_tag', \
+                                tag=raw_entry[5:]))
     elif raw_entry[:5] == 'day: ':
         return redirect(url_for('view_entries_for_day', day=raw_entry[5:]))
     elif raw_entry == 'login':
@@ -18,14 +20,9 @@ def parse_input(raw_entry, current_time):
     elif raw_entry == 'logout':
         return redirect(url_for('auth.logout'))
     elif raw_entry == 'change email':
-        change_email()
-        return get_input()
+        return redirect(url_for('auth.change_email'))
     elif raw_entry == 'change password':
-        change_password()
-        return get_input()
-    elif raw_entry[:14] == 'reset password':
-        reset_password(raw_entry[15:])
-        return get_input()
+        return redirect(url_for('auth.change_password'))
     elif raw_entry == 'about':
         return redirect(url_for('admin.get_details'))
     elif raw_entry == 'rename chrono':
@@ -37,6 +34,8 @@ def parse_input(raw_entry, current_time):
 
 
 def process_entry(raw_entry, current_time):
+    '''Take the user's input and UTC datetime and return a clean, formatted
+    entry, a timestamp as a string, and a list of tags'''
     raw_tags = find_and_process_tags(raw_entry)
     clean_entry = clean_up_entry(raw_entry, raw_tags)
     clean_tags = clean_up_tags(raw_tags)
@@ -45,7 +44,7 @@ def process_entry(raw_entry, current_time):
 
 
 def clean_up_entry(raw_entry, raw_tags):
-    # Strip hashtags from end of text
+    '''Strip tags from end of entry.'''
     bag_of_words = raw_entry.split()
     if bag_of_words == raw_tags:
         clean_entry = bag_of_words[0]
@@ -59,14 +58,13 @@ def clean_up_entry(raw_entry, raw_tags):
 
 
 def create_timestamp(current_time):
+    '''TinyDB can't handle datetime objects; convert datetime to string.'''
     timestamp = datetime.strftime(current_time, '%Y-%m-%d %H:%M:%S')
     return timestamp
 
 
 def find_and_process_tags(raw_entry):
-    '''
-    Extract all hashtags from the entry.
-    '''
+    '''Detect all tags in the entry and return a list of tags.'''
     bag_of_words = raw_entry.split()
     raw_tags = list()
     punctuation = ['.', ',']
@@ -80,7 +78,8 @@ def find_and_process_tags(raw_entry):
 
 
 def clean_up_tags(raw_tags):
-    print(raw_tags)
+    '''Remove # from tags (the clean tags are necessary for use in URLs,
+    the raw tags are needed for cleaning up the entries).'''
     clean_tags = []
     for tag in raw_tags:
         clean_tags.append(tag[1:])
@@ -88,6 +87,7 @@ def clean_up_tags(raw_tags):
 
 
 def create_new_entry(clean_entry, timestamp, clean_tags):
+    '''Add the processed entry, timestamp, and tags to the database.'''
     insert_record('entries', {'entry': clean_entry, 'timestamp': timestamp, \
                     'tags': clean_tags, 'creator_id': session.get('user_id')})
     return redirect(url_for('main.browse_all_entries'))

@@ -14,6 +14,7 @@ from parse import *
 
 @main.route('/', methods=['GET', 'POST'])
 def browse_all_entries():
+    '''Returns all entries (most recent entry at the top of the page).'''
     details = get_record('admin', Query().creator_id == 1)
     if not session.get('logged_in'):
         if details:
@@ -112,15 +113,3 @@ def view_entries_for_tag(tag):
     entries_for_tag = search_records('entries', Query().tags.all([tag]))
     return render_template('tag.html', form=form, tag=tag, \
                            entries_for_tag=entries_for_tag, details=details)
-
-
-@main.app_errorhandler(404)
-def page_not_found(e):
-    details = get_record('admin', Query().creator_id == 1)
-    return render_template('404.html', details=details), 404
-
-
-@main.app_errorhandler(500)
-def internal_server_error(e):
-    details = get_record('admin', Query().creator_id == 1)
-    return render_template('500.html', details=details), 500
