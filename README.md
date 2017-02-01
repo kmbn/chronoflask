@@ -1,7 +1,9 @@
 # Chronoflask
 A minimalist diary/journal application made with Python 3, Flask, and TinyDB and inspired by Warren Ellis's Chronofile Minimal and Buckminster Fuller's Dymaxion Chronofile.
 Add new entries (with or witout hashtags) in a single input field. Each entry is stored with a UTC timestamp.
+
 View recent entries (in reverse chronological order), view all entries for a single day (in chronological order), view a single entry, view all entries associated with a tag, and view a list of tags.
+
 Chronoflask is private by default.
 
 ## Setup
@@ -16,5 +18,7 @@ Chronoflask is private by default.
 ## Usage
 After completing the setup steps, open a browser and navigate to `http://localhost:5000/`. The first time you run the app you'l need to register; the current version of the app is intended to be single-user, so it is only possible to create one account.
 Use the entry form to post brief notes, thoughts, observations, etc.
+
 Any `#hashtags` in the entry will be detected and added to a list of tags for that entry. Any `#hashtags` at the end of the entry will will be stripped from the entry text to improve presentation (they'll be added to the tag list beforehand, though).
+
 You can change the name of the chronofile and/or author in the `Admin` section, as well as change your email address and/or password.
