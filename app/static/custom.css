@@ -20,11 +20,18 @@ p               { font-size: 2rem;
 body            { background-color:
                 }
 
+.message        { font-size: 1.8rem;
+                  font-family: 'ff-meta-serif-sc-web-pro',Georgia,'EB Garamond', serif;
+                 }
+
+.alert-info     { margin-bottom: 0px;
+                }
+
 .navbar-inverse { border-radius: 0 !important;
                   -webkit-border-radius: 0 !important;
                   -moz-border-radius: 0 !important;
                   background-color: #383636;
-                  margin-bottom: 0px;
+                  margin-bottom: 10px;
                 }
 
 .navbar-brand   { font-size: 2.3rem;
