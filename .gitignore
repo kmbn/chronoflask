@@ -12,6 +12,11 @@ Thumbs.db
 ######################
 *.pyc
 
+# Databases #
+.db
+.json
+######################
+
 # Specific folders #
 ######################
 /venv
@@ -19,4 +24,3 @@ Thumbs.db
 
 # Specific files #
 ######################
-db.json
