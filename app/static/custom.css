@@ -72,3 +72,26 @@ body            { background-color:
                 }
 
 @media (min-width: 992px) {.container-content { width: 750px;}}
+
+/*------------------------------------------------------------------------*/
+/* Make footer appear at bottom of screen if there's not a lot of content */
+html,
+body {
+    margin:0;
+    padding:0;
+    height:100%;
+}
+#wrapper {
+    min-height:100%;
+    position:relative;
+}
+#content {
+    padding-bottom:100px; /* Height of the footer element */
+}
+#footer {
+    width:100%;
+    height:100px;
+    position:absolute;
+    bottom:0;
+    left:0;
+}
