@@ -6,6 +6,10 @@ h1              { font-size: 8rem;
                   text-transform: uppercase;
                 }
 
+h2              { font-family: 'futura-pt',Futura,'Open Sans',sans-serif;
+                  color: #383636;
+                }
+
 p               { font-size: 2rem;
                   color: #383636;
                   font-family: 'ff-meta-serif-sc-web-pro',Georgia,'EB Garamond', serif;
