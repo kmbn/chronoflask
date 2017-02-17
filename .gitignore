@@ -13,8 +13,8 @@ Thumbs.db
 *.pyc
 
 # Databases #
-.db
-.json
+*.db
+*.json
 ######################
 
 # Specific folders #

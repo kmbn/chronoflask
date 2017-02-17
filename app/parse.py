@@ -1,6 +1,6 @@
 from flask import redirect, url_for, session
 from datetime import datetime
-from db import insert_record
+from app.db import insert_record
 
 def parse_input(raw_entry, current_time):
     '''Parse input and either create a new entry using the input

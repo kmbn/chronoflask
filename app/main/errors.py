@@ -1,6 +1,6 @@
-from db import get_record
-from tinydb import Query
 from flask import render_template
+from tinydb import Query
+from app.db import get_record
 from . import main
 
 @main.app_errorhandler(404)

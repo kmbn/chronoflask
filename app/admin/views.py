@@ -1,7 +1,7 @@
 from flask import Flask, session, redirect, url_for, render_template, flash, \
                   Blueprint
 import ujson
-from db import *
+from app.db import *
 from . import admin
 from .forms import RenameChronofileForm, RenameAuthorForm
 

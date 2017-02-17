@@ -3,7 +3,7 @@ from flask import Flask, session, redirect, url_for, render_template, flash, \
 from passlib.context import CryptContext
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 import ujson
-from db import *
+from app.db import *
 
 pwd_context = CryptContext(schemes=["pbkdf2_sha256"])
 
@@ -11,7 +11,7 @@ from . import auth
 from .forms import ChangeEmailForm, ChangePasswordForm, \
                        RegistrationForm, LoginForm, ResetPasswordForm, \
                        SetNewPasswordForm
-from chronoflask import send_email
+from app.mail import send_email
 
 
 @auth.route('/login', methods=['GET', 'POST'])

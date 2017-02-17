@@ -6,10 +6,10 @@ from datetime import datetime
 from passlib.context import CryptContext
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 import ujson
-from db import *
+from app.db import *
 from . import main
 from .forms import RawEntryForm
-from parse import *
+from app.parse import *
 
 
 @main.route('/', methods=['GET', 'POST'])
