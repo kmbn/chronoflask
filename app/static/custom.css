@@ -4,6 +4,8 @@ h1              { font-size: 8rem;
                   font-weight: 800;
                   color: #383636;
                   text-transform: uppercase;
+                  margin-top: 0px;
+                  margin-bottom: 0px;
                 }
 
 h2              { font-family: 'futura-pt',Futura,'Open Sans',sans-serif;
@@ -22,6 +24,7 @@ body            { background-color:
                   -webkit-border-radius: 0 !important;
                   -moz-border-radius: 0 !important;
                   background-color: #383636;
+                  margin-bottom: 0px;
                 }
 
 .navbar-brand   { font-size: 2.3rem;
@@ -40,7 +43,9 @@ body            { background-color:
                   font-variant: small-caps;
                 }
 
-.page-header    { margin-bottom: 40px;
+.page-header    { margin-top: 20px;
+                  margin-bottom: 40px;
+                  padding-bottom: 5px;
                 }
 
 .control-label  { font-size: 1.8rem;
