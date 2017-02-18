@@ -22,7 +22,10 @@
                     {% if t != tag %}
                         <a href="{{ url_for('main.view_entries_for_tag', tag=t, _external=True) }}">#{{ t }}</a>
                     {% endif %}
-                {% endfor %}</p></li>
+                {% endfor %}
+                {% if entry['tags']|length == 0 %}
+                    none
+                {% endif %}</p></li>
         {% endfor %}
         </ul>
     </div>
