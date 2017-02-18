@@ -1,5 +1,5 @@
 from flask import Flask, session, redirect, url_for, render_template, flash, \
-                  Blueprint, current_app
+                  Blueprint, current_app, request
 from passlib.context import CryptContext
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 import ujson
@@ -12,6 +12,7 @@ from .forms import ChangeEmailForm, ChangePasswordForm, \
                        RegistrationForm, LoginForm, ResetPasswordForm, \
                        SetNewPasswordForm
 from app.mail import send_email
+from app.decorators import login_required
 
 
 @auth.route('/login', methods=['GET', 'POST'])
@@ -27,14 +28,14 @@ def login():
         session['logged_in'] = True
         user_id = get_element_id('auth', Query().email == form.email.data)
         session['user_id'] = user_id
-        return redirect(url_for('main.browse_all_entries'))
+        return redirect(request.args.get('next')) or \
+            redirect(url_for('main.browse_all_entries'))
     return render_template('login.html', form=form, details=details)
 
 
 @auth.route('/logout')
+@login_required
 def logout():
-    if not session.get('logged_in'):
-        return redirect(url_for('main.browse_all_entries'))
     session['logged_in'] = None
     flash('You have been logged out.')
     return redirect(url_for('main.browse_all_entries'))
@@ -70,7 +71,7 @@ def register():
 def request_reset():
     details = get_record('admin', Query().creator_id == 1)
     if not details:
-        return redirect(url_for('main.browse_all_entries'))
+        return abort(404)
     form = ResetPasswordForm()
     if form.validate_on_submit():
         email = form.email.data
@@ -87,7 +88,7 @@ def request_reset():
 def confirm_password_reset(token):
     details = get_record('admin', Query().creator_id == 1)
     if not details:
-        return redirect(url_for('main.browse_all_entries'))
+        return abort(404)
     s = Serializer(current_app.config['SECRET_KEY'])
     try:
         data = s.loads(token)
@@ -110,9 +111,8 @@ def confirm_password_reset(token):
 
 
 @auth.route('/change_email', methods=['GET', 'POST'])
+@login_required
 def change_email():
-    if not session.get('logged_in'):
-        return redirect(url_for('main.browse_all_entries'))
     details = get_record('admin', Query().creator_id == 1)
     form = ChangeEmailForm()
     if form.validate_on_submit():
@@ -125,9 +125,8 @@ def change_email():
 
 
 @auth.route('/change_password', methods=['GET', 'POST'])
+@login_required
 def change_password():
-    if not session.get('logged_in'):
-        return redirect(url_for('main.browse_all_entries'))
     details = get_record('admin', Query().creator_id == 1)
     form = ChangePasswordForm()
     if form.validate_on_submit():

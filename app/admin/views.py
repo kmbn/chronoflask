@@ -4,23 +4,22 @@ import ujson
 from app.db import *
 from . import admin
 from .forms import RenameChronofileForm, RenameAuthorForm
+from app.decorators import login_required
 
 
 @admin.route('/')
+@login_required
 def get_details():
     '''Display name of site, author, etc. as well as links to edit
     those details and change email, password, etc.'''
-    if not session.get('logged_in'):
-        return redirect(url_for('main.browse_all_entries'))
     details = get_record('admin', \
                          Query().creator_id == session.get('user_id'))
     return render_template('admin.html', details=details)
 
 
 @admin.route('/rename_chronofile', methods=['GET', 'POST'])
+@login_required
 def rename_chronofile():
-    if not session.get('logged_in'):
-        return redirect(url_for('main.browse_all_entries'))
     details = get_record('admin', Query().creator_id == 1)
     form = RenameChronofileForm()
     if form.validate_on_submit():
@@ -33,9 +32,8 @@ def rename_chronofile():
 
 
 @admin.route('/rename_author', methods=['GET', 'POST'])
+@login_required
 def rename_author():
-    if not session.get('logged_in'):
-        return redirect(url_for('main.browse_all_entries'))
     details = get_record('admin', Query().creator_id == 1)
     form = RenameAuthorForm()
     if form.validate_on_submit():
