@@ -83,6 +83,13 @@ body            { background-color:
 .alert-info     { font-family: 'ff-meta-serif-sc-web-pro',Georgia,'EB Garamond', serif;
                 }
 
+.right-link     { float: right;
+                  text-align: right;
+                }
+#placeholder    { opacity: 0;
+                  visibility: hidden;
+                }
+
 @media (min-width: 992px) {.container-content { width: 750px;}}
 
 /*------------------------------------------------------------------------*/

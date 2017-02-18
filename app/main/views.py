@@ -1,15 +1,14 @@
 import os
 from flask import Flask, session, g, redirect, url_for, \
-                  render_template, flash, Blueprint, current_app
+                  render_template, flash, Blueprint, current_app, abort
 from flask_bootstrap import Bootstrap
 from datetime import datetime
-from passlib.context import CryptContext
-from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 import ujson
 from app.db import *
 from . import main
 from .forms import RawEntryForm
 from app.parse import *
+from app.pagination import *
 
 
 @main.route('/', methods=['GET', 'POST'])
@@ -28,11 +27,40 @@ def browse_all_entries():
     form = RawEntryForm()
     if form.validate_on_submit():
         return parse_input(form.raw_entry.data, datetime.utcnow())
-    results = search_records('entries', \
-                             Query().creator_id == session.get('user_id'))
-    all_entries = results[::-1]
-    return render_template('home.html', all_entries=all_entries, form=form, \
-                           details=details)
+    page = 1
+    # Get entries for the given page
+    entries_for_page = get_entries_for_page(page)
+    # Check if there's another page, returns None if not
+    next_page = check_next_page(page)
+    return render_template('home.html', entries_for_page=entries_for_page, \
+        form=form, details=details, next_page=next_page)
+
+
+@main.route('page/<page>', methods=['GET', 'POST'])
+def view_entries_for_page(page):
+    '''Returns entries for given page in reverse chronological order.'''
+    if not session.get('logged_in'):
+        return redirect(url_for('main.browse_all_entries'))
+    try:
+        int(page)
+    except:
+        TypeError
+        return abort(404)
+    page = int(page)
+    if page == 1:
+        return redirect(url_for('main.browse_all_entries'))
+    details = get_record('admin', Query().creator_id == 1)
+    form = RawEntryForm()
+    if form.validate_on_submit():
+        return parse_input(form.raw_entry.data, datetime.utcnow())
+    # Get entries for the given page
+    entries_for_page = get_entries_for_page(page)
+    # Check if there's another page, returns None if not
+    next_page = check_next_page(page)
+    prev_page = page - 1
+    return render_template('page.html', form=form, \
+        entries_for_page=entries_for_page, details=details, \
+        page=page, next_page=next_page, prev_page=prev_page)
 
 
 @main.route('day/<day>', methods=['GET', 'POST'])

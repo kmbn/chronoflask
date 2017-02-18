@@ -1,6 +1,7 @@
 from flask import redirect, url_for, session
 from datetime import datetime
 from app.db import insert_record
+from app.pagination import update_pagination
 
 def parse_input(raw_entry, current_time):
     '''Parse input and either create a new entry using the input
@@ -90,4 +91,6 @@ def create_new_entry(clean_entry, timestamp, clean_tags):
     '''Add the processed entry, timestamp, and tags to the database.'''
     insert_record('entries', {'entry': clean_entry, 'timestamp': timestamp, \
                     'tags': clean_tags, 'creator_id': session.get('user_id')})
+    print(clean_entry)
+    update_pagination()
     return redirect(url_for('main.browse_all_entries'))
