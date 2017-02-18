@@ -6,6 +6,10 @@
     </div>
 
     <div>
+        {{ wtf.quick_form(form) }}
+    </div>
+
+    <div>
     {% if not entries_for_page %}
         <p>Nothing in your chronofile yet.</p>
     {% else %}
@@ -30,10 +34,6 @@
         {% if next_page %}
         <p><a href="{{ url_for('main.view_entries_for_page', page=next_page, _external=True) }}">[Older entries]</a></p>
         {% endif %}
-    </div>
-    </br>
-    <div>
-        {{ wtf.quick_form(form) }}
     </div>
 
 {% endblock %}

@@ -6,6 +6,10 @@
     </div>
 
     <div>
+        {{ wtf.quick_form(form) }}
+    </div>
+
+    <div>
     {% if all_tags|length == 0 %}
         <p>There are no tags yet.</p>
     {% else %}
@@ -17,10 +21,6 @@
         {% endfor %}
         </ul>
     {% endif %}
-    </div>
-    </br>
-    <div>
-        {{ wtf.quick_form(form) }}
     </div>
 
 {% endblock %}

@@ -6,6 +6,10 @@
     </div>
 
     <div>
+        {{ wtf.quick_form(form) }}
+    </div>
+
+    <div>
     <ul>
     {% for entry in entries_for_page %}
         <li><p><a href="{{ url_for('main.view_entries_for_day', day=entry['timestamp'][:10], _external=True) }}">{{ entry['timestamp'][:10] }}</a> at <a href="{{ url_for('main.view_single_entry', timestamp=entry['timestamp'], _external=True) }}">{{ entry['timestamp'][11:] }}</a>:</br>{{entry['entry']}}</br>
@@ -25,10 +29,6 @@
     <div>
         <p class="right-link">{% if prev_page %}<a href="{{ url_for('main.view_entries_for_page', page=prev_page, _external=True) }}">[Newer entries]</a>{% else %} {% endif %}</p>
         <p>{% if next_page %}<a href="{{ url_for('main.view_entries_for_page', page=next_page, _external=True) }}">[Older entries]</a>{% else %}<span id="placeholder">_</span>{% endif %}</p>
-    </div>
-    </br>
-    <div>
-        {{ wtf.quick_form(form) }}
     </div>
 
 {% endblock %}

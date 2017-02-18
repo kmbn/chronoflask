@@ -10,6 +10,10 @@
     </div>
 
     <div>
+        {{ wtf.quick_form(form) }}
+    </div>
+
+    <div>
         <p>{{entry['entry']}}</br>
         Tags:
             {% if entry['tags']|length != 0 %}
@@ -21,10 +25,6 @@
                 {% endif %}
                 </p></li>
         </p>
-    </div>
-    </br>
-    <div>
-        {{ wtf.quick_form(form) }}
     </div>
 
 {% endblock %}
