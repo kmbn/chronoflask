@@ -73,6 +73,8 @@ def view_entries_for_day(day):
     if form.validate_on_submit():
         return parse_input(form.raw_entry.data, datetime.utcnow())
     entries_for_day = search_records('entries', Query().timestamp.all([day]))
+    if not entries_for_day:
+        return abort(404)
     return render_template('day.html', form=form, day=day, \
                            entries_for_day=entries_for_day, details=details)
 
@@ -87,6 +89,8 @@ def view_single_entry(timestamp):
     if form.validate_on_submit():
         return parse_input(form.raw_entry.data, datetime.utcnow())
     entry = get_record('entries', Query().timestamp == timestamp)
+    if not entry:
+        return abort(404)
     return render_template('entry.html', form=form, timestamp=timestamp, \
                            entry=entry, details=details)
 
@@ -139,5 +143,7 @@ def view_entries_for_tag(tag):
     if form.validate_on_submit():
         return parse_input(form.raw_entry.data, datetime.utcnow())
     entries_for_tag = search_records('entries', Query().tags.all([tag]))
+    if not entries_for_tag:
+        return abort(404)
     return render_template('tag.html', form=form, tag=tag, \
                            entries_for_tag=entries_for_tag, details=details)
