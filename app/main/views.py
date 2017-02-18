@@ -10,12 +10,13 @@ from .forms import RawEntryForm
 from app.parse import *
 from app.pagination import *
 from app.decorators import login_required
+from app.details import get_details
 
 
 @main.route('/', methods=['GET', 'POST'])
 def browse_all_entries():
     '''Returns all entries (most recent entry at the top of the page).'''
-    details = get_record('admin', Query().creator_id == 1)
+    details = get_details()
     if not session.get('logged_in'):
         if details:
             register = False
@@ -49,7 +50,7 @@ def view_entries_for_page(page):
     page = int(page)
     if page == 1:
         return redirect(url_for('main.browse_all_entries'))
-    details = get_record('admin', Query().creator_id == 1)
+    details = get_details()
     form = RawEntryForm()
     if form.validate_on_submit():
         return parse_input(form.raw_entry.data, datetime.utcnow())
@@ -67,7 +68,7 @@ def view_entries_for_page(page):
 @login_required
 def view_entries_for_day(day):
     '''Returns entries for given day in chronological order.'''
-    details = get_record('admin', Query().creator_id == 1)
+    details = get_details()
     form = RawEntryForm()
     if form.validate_on_submit():
         return parse_input(form.raw_entry.data, datetime.utcnow())
@@ -82,7 +83,7 @@ def view_entries_for_day(day):
 @login_required
 def view_single_entry(timestamp):
     '''Return a single entry based on given timestamp.'''
-    details = get_record('admin', Query().creator_id == 1)
+    details = get_details()
     form = RawEntryForm()
     if form.validate_on_submit():
         return parse_input(form.raw_entry.data, datetime.utcnow())
@@ -96,7 +97,7 @@ def view_single_entry(timestamp):
 @main.route('tags', methods=['GET', 'POST'])
 @login_required
 def view_all_tags():
-    details = get_record('admin', Query().creator_id == 1)
+    details = get_details()
     form = RawEntryForm()
     if form.validate_on_submit():
         return parse_input(form.raw_entry.data, datetime.utcnow())
@@ -115,7 +116,7 @@ def view_all_tags():
 @main.route('days', methods=['GET', 'POST'])
 @login_required
 def view_all_days():
-    details = get_record('admin', Query().creator_id == 1)
+    details = get_details()
     form = RawEntryForm()
     if form.validate_on_submit():
         return parse_input(form.raw_entry.data, datetime.utcnow())
@@ -133,7 +134,7 @@ def view_all_days():
 @login_required
 def view_entries_for_tag(tag):
     '''Return entries for given tag in chronological order.'''
-    details = get_record('admin', Query().creator_id == 1)
+    details = get_details()
     form = RawEntryForm()
     if form.validate_on_submit():
         return parse_input(form.raw_entry.data, datetime.utcnow())

@@ -13,11 +13,12 @@ from .forms import ChangeEmailForm, ChangePasswordForm, \
                        SetNewPasswordForm
 from app.mail import send_email
 from app.decorators import login_required
+from app.details import get_details
 
 
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
-    details = get_record('admin', Query().creator_id == 1)
+    details = get_details()
     if not get_record('auth', Query().email.exists()):
         flash('You need to register first.')
         return redirect(url_for('auth.register'))
@@ -43,9 +44,9 @@ def logout():
 
 @auth.route('/register', methods=['GET', 'POST'])
 def register():
-    details = get_record('admin', Query().creator_id == 1)
+    details = get_details()
     if details:
-        flash('A user is already registered. Login.')
+        flash('A user is already registered. Log in.')
         return redirect(url_for('auth.login'))
     details = {'chronofile_name': current_app.config['DEFAULT_NAME'], \
                'author_name': current_app.config['DEFAULT_AUTHOR']}
@@ -69,7 +70,7 @@ def register():
 
 @auth.route('/reset_password', methods=['GET', 'POST'])
 def request_reset():
-    details = get_record('admin', Query().creator_id == 1)
+    details = get_details()
     if not details:
         return abort(404)
     form = ResetPasswordForm()
@@ -86,7 +87,7 @@ def request_reset():
 
 @auth.route('/reset_password/<token>', methods=['GET', 'POST'])
 def confirm_password_reset(token):
-    details = get_record('admin', Query().creator_id == 1)
+    details = get_details()
     if not details:
         return abort(404)
     s = Serializer(current_app.config['SECRET_KEY'])
@@ -113,7 +114,7 @@ def confirm_password_reset(token):
 @auth.route('/change_email', methods=['GET', 'POST'])
 @login_required
 def change_email():
-    details = get_record('admin', Query().creator_id == 1)
+    details = get_details()
     form = ChangeEmailForm()
     if form.validate_on_submit():
         new_email = form.new_email.data
@@ -127,7 +128,7 @@ def change_email():
 @auth.route('/change_password', methods=['GET', 'POST'])
 @login_required
 def change_password():
-    details = get_record('admin', Query().creator_id == 1)
+    details = get_details()
     form = ChangePasswordForm()
     if form.validate_on_submit():
         new_password_hash = pwd_context.hash(form.new_password.data)

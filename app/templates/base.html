@@ -39,7 +39,7 @@ type="image/x-icon">
                     <ul class="nav navbar-nav navbar-right">
                         <li><a href="{{ url_for('main.view_all_days') }}">Days</a>
                         <li><a href="{{ url_for('main.view_all_tags') }}">Tags</a></li>
-                        <li><a href="{{ url_for('admin.get_details') }}">Admin</a></li>
+                        <li><a href="{{ url_for('admin.view_admin') }}">Admin</a></li>
                         <li><a href="{{ url_for('auth.logout') }}">Log out</a></li>
                     </ul>
                 {% else %}
