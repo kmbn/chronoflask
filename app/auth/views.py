@@ -1,13 +1,9 @@
 from flask import Flask, session, redirect, url_for, render_template, flash, \
                   Blueprint, current_app, request
-from passlib.context import CryptContext
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 import ujson
 from app.db import *
-
-pwd_context = CryptContext(schemes=["pbkdf2_sha256"])
-
-from . import auth
+from . import auth, pwd_context
 from .forms import ChangeEmailForm, ChangePasswordForm, \
                        RegistrationForm, LoginForm, ResetPasswordForm, \
                        SetNewPasswordForm
@@ -29,8 +25,10 @@ def login():
         session['logged_in'] = True
         user_id = get_element_id('auth', Query().email == form.email.data)
         session['user_id'] = user_id
-        return redirect(request.args.get('next')) or \
-            redirect(url_for('main.browse_all_entries'))
+        if request.args.get('next'):
+            return redirect(request.args.get('next'))
+        else:
+            return redirect(url_for('main.browse_all_entries'))
     return render_template('login.html', form=form, details=details)
 
 

@@ -27,8 +27,10 @@ def browse_all_entries():
         return render_template('welcome.html', details=details, \
                                register=register)
     form = RawEntryForm()
+    # Try to validate form and create a new entry
     if form.validate_on_submit():
         return parse_input(form.raw_entry.data, datetime.utcnow())
+    # Otherwise, show the latest entries
     page = 1
     # Get entries for the given page
     entries_for_page = get_entries_for_page(page)
