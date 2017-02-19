@@ -2,11 +2,7 @@
 {% block page_content %}
 
     <div class="page-header">
-        {% if entry|length == 0 %}
-            <h1>No Entry</h1>
-        {% else %}
-            <h1>{{ timestamp[2:] }}</h1>
-        {% endif %}
+        <h1>{{ timestamp[2:] }}</h1>
     </div>
 
     <div>
@@ -25,6 +21,7 @@
                 {% endif %}
                 </p></li>
         </p>
+        <p><a href="{{ url_for('main.edit_entry', timestamp=timestamp, _external=True) }}">[Edit entry]</a></p>
     </div>
 
 {% endblock %}

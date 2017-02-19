@@ -6,7 +6,7 @@ from datetime import datetime
 import ujson
 from app.db import *
 from . import main
-from .forms import RawEntryForm
+from .forms import RawEntryForm, EditEntryForm
 from app.parse import *
 from app.pagination import *
 from app.decorators import login_required
@@ -85,15 +85,41 @@ def view_entries_for_day(day):
 @login_required
 def view_single_entry(timestamp):
     '''Return a single entry based on given timestamp.'''
-    details = get_details()
-    form = RawEntryForm()
-    if form.validate_on_submit():
-        return parse_input(form.raw_entry.data, datetime.utcnow())
     entry = get_record('entries', Query().timestamp == timestamp)
     if not entry:
         return abort(404)
+    form = RawEntryForm()
+    if form.validate_on_submit():
+        return parse_input(form.raw_entry.data, datetime.utcnow())
+    details = get_details()
     return render_template('entry.html', form=form, timestamp=timestamp, \
                            entry=entry, details=details)
+
+
+@main.route('timestamp/<timestamp>/edit', methods=['GET', 'POST'])
+@login_required
+def edit_entry(timestamp):
+    '''Edit an entry and return a view of the edited entry'''
+    entry = get_record('entries', Query().timestamp == timestamp)
+    if not entry:
+        return abort(404)
+    form = EditEntryForm()
+    if form.validate_on_submit():
+        # Split comma-delimted string of tags into a list
+        # Delete spaces at the start of tags if necessary
+        tags = form.new_tags.data.split(", ")
+        update_record('entries', {'entry': form.new_entry.data, \
+            'tags': tags}, (Query().creator_id == 1) & \
+            (Query().timestamp == timestamp))
+        flash('Entry updated.')
+        update_pagination()
+        return redirect(url_for('main.view_single_entry', timestamp=timestamp))
+    form.new_entry.default = entry['entry']
+    form.new_tags.default = ', '.join(entry['tags'])
+    form.process()
+    details = get_details()
+    return render_template('edit_entry.html', form=form, timestamp=timestamp, \
+        details=details)
 
 
 @main.route('tags', methods=['GET', 'POST'])

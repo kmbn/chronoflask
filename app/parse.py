@@ -90,6 +90,7 @@ def clean_up_tags(raw_tags):
 def create_new_entry(clean_entry, timestamp, clean_tags):
     '''Add the processed entry, timestamp, and tags to the database.'''
     insert_record('entries', {'entry': clean_entry, 'timestamp': timestamp, \
-                    'tags': clean_tags, 'creator_id': session.get('user_id')})
+                    'tags': clean_tags, 'creator_id': 1})
+    # Multi-user: change 'creator_id': 1 to session.get('user_id')
     update_pagination()
     return redirect(url_for('main.browse_all_entries'))
