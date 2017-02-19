@@ -27,8 +27,8 @@
     </div>
     </br>
     <div>
-        <p class="right-link">{% if prev_page %}<a href="{{ url_for('main.view_entries_for_page', page=prev_page, _external=True) }}">[Newer entries]</a>{% else %} {% endif %}</p>
-        <p>{% if next_page %}<a href="{{ url_for('main.view_entries_for_page', page=next_page, _external=True) }}">[Older entries]</a>{% else %}<span id="placeholder">_</span>{% endif %}</p>
+        <p class="right-link">{% if prev_page %}<a class="btn btn-default" href="{{ url_for('main.view_entries_for_page', page=prev_page, _external=True) }}">Newer entries</a>{% else %} {% endif %}</p>
+        <p>{% if next_page %}<a class="btn btn-default" href="{{ url_for('main.view_entries_for_page', page=next_page, _external=True) }}">Older entries</a>{% else %}<span class="btn btn-default" id="placeholder">_</span>{% endif %}</p>
     </div>
 
 {% endblock %}

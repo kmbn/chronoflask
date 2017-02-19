@@ -10,7 +10,7 @@
     </div>
 
     <div>
-        <p>{{entry['entry']}}</br>
+        <p>Text: {{entry['entry']}}</br>
         Tags:
             {% if entry['tags']|length != 0 %}
                     {% for tag in entry['tags'] %}
@@ -21,7 +21,7 @@
                 {% endif %}
                 </p></li>
         </p>
-        <p><a href="{{ url_for('main.edit_entry', timestamp=timestamp, _external=True) }}">[Edit entry]</a></p>
+        <a class="btn btn-default" href="{{ url_for('main.edit_entry', timestamp=timestamp, _external=True) }}">Edit entry</a>
     </div>
 
 {% endblock %}

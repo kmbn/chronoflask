@@ -32,7 +32,7 @@
     </br>
     <div>
         {% if next_page %}
-        <p><a href="{{ url_for('main.view_entries_for_page', page=next_page, _external=True) }}">[Older entries]</a></p>
+        <p><a class="btn btn-default" href="{{ url_for('main.view_entries_for_page', page=next_page, _external=True) }}">Older entries</a></p>
         {% endif %}
     </div>
 
