@@ -82,7 +82,7 @@ def request_reset():
         send_email(email, 'Link to reset your password',
                    'email/reset_password', token=token)
         flash('Your password reset token has been sent.')
-        return redirect(url_for('admin.get_details'))
+        return redirect(url_for('admin.view_admin'))
     return render_template('reset_password.html', form=form, details=details)
 
 
@@ -122,7 +122,7 @@ def change_email():
         user_id = session.get('user_id')
         get_table('auth').update({'email': new_email}, eids=user_id)
         flash('Your email address has been updated.')
-        return redirect(url_for('admin.get_details'))
+        return redirect(url_for('admin.view_admin'))
     return render_template('change_email.html', form=form, details=details)
 
 
@@ -136,7 +136,7 @@ def change_password():
         get_table('auth').update({'password_hash': new_password_hash}, \
                                  eids=[session.get('user_id')])
         flash('Your password has been updated.')
-        return redirect(url_for('admin.get_details'))
+        return redirect(url_for('admin.view_admin'))
     return render_template('change_password.html', form=form, details=details)
 
 

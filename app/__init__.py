@@ -1,5 +1,6 @@
 import os
 from flask import Flask
+from flask_mail import Mail
 from flask_bootstrap import Bootstrap
 
 
@@ -33,6 +34,9 @@ app.config['MAIL_SENDER'] = 'Chronoflask <admin@chronoflask.com>'
 app.config['DEFAULT_NAME'] = 'Chronoflask'
 app.config['DEFAULT_AUTHOR'] = 'Chronologist'
 
+
+# Set up Mail
+mail = Mail(app)
 
 # Set up Bootstrap
 bootstrap = Bootstrap(app)
