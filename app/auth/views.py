@@ -42,6 +42,8 @@ def logout():
 
 @auth.route('/register', methods=['GET', 'POST'])
 def register():
+    ''' Register user and create pagination table with one page
+    and no entries.'''
     details = get_details()
     if details:
         flash('A user is already registered. Log in.')
@@ -60,6 +62,7 @@ def register():
                                 'author_name': \
                                 current_app.config['DEFAULT_AUTHOR'], \
                                 'creator_id': creator_id})
+        insert_record('pagination', {'page': 1, 'entries': None})
         flash('Registration successful. You can login now.')
         return redirect(url_for('auth.login'))
     return render_template('register.html', form=form, details=details, \
