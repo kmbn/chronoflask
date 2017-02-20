@@ -82,7 +82,7 @@ def request_reset():
         send_email(email, 'Link to reset your password',
                    'email/reset_password', token=token)
         flash('Your password reset token has been sent.')
-        return redirect(url_for('admin.view_admin'))
+        return redirect(url_for('auth.login'))
     return render_template('reset_password.html', form=form, details=details)
 
 
